@@ -3,6 +3,7 @@
 @Author:何同学
 """
 from fastapi import FastAPI
+from core.logger import logger
 
 from core.config import settings
 
@@ -17,4 +18,5 @@ app = FastAPI(
 
 @app.get('/test', summary='测试接口')
 async def test():
+    logger.success('测试成功')
     return '测试成功'
