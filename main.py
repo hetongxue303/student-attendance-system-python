@@ -3,6 +3,8 @@
 @Author:何同学
 """
 from fastapi import FastAPI
+
+from core.events import events_listen
 from core.logger import logger
 
 from core.config import settings
@@ -14,6 +16,9 @@ app = FastAPI(
     debug=settings.APP_DEBUG,
     openapi_url=f'{settings.APP_API_PREFIX}/openapi.json'
 )
+
+# 事件监听
+events_listen(app)
 
 
 @app.get('/test', summary='测试接口')
