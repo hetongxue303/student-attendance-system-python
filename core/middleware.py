@@ -19,4 +19,4 @@ def cors_middleware(app: FastAPI):
             allow_headers=['*'],
             allow_credentials=True
         )
-        logger.success('跨域已开启')
+        logger.success('跨域已开启！！！')

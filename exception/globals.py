@@ -17,6 +17,8 @@ from schemas.result import fail
 
 
 def init_exception(app: FastAPI):
+    logger.success('全局异常捕获已开启！！！')
+
     @app.exception_handler(Exception)
     async def exception_handler(request: Request, e: Exception):
         text: str = '全局异常'
