@@ -8,6 +8,7 @@ from core.events import events_listen
 from core.logger import logger
 
 from core.config import settings
+from core.middleware import cors_middleware
 
 app = FastAPI(
     title=settings.APP_TITLE,
@@ -19,6 +20,8 @@ app = FastAPI(
 
 # 事件监听
 events_listen(app)
+# 跨域中间件
+cors_middleware(app)
 
 
 @app.get('/test', summary='测试接口')
