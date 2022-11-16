@@ -2,7 +2,6 @@
 统一返回类
 @Author:何同学
 """
-import json
 import typing
 from starlette import status
 from starlette.background import BackgroundTask
@@ -24,7 +23,7 @@ def success(code: int = status.HTTP_200_OK,
         content={
             'code': code,
             'message': message,
-            'data': json.loads(data)
+            'data': data
         }
     )
 
@@ -43,6 +42,6 @@ def fail(code: int = status.HTTP_400_BAD_REQUEST,
         content={
             'code': code,
             'message': message,
-            'data': json.loads(data)
+            'data': data
         }
     )
