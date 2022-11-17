@@ -6,10 +6,9 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from database.data import accountData
-from models.account import Account
+from models import Base, Account
 from core.logger import logger
 from core.config import settings
-from models.base import Base
 
 # 创建引擎
 engine = create_engine(

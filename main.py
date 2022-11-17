@@ -3,10 +3,11 @@
 @Author:何同学
 """
 from fastapi import FastAPI
+
 from core.logger import logger
 from core.config import settings
-from schemas.result import success
 from core.events import events_listen
+from schemas import success
 
 app = FastAPI(
     title=settings.APP_TITLE,

@@ -8,8 +8,8 @@ from core.config import settings
 from core.logger import logger
 from core.middleware import cors_middleware
 from database.mysql import drop_db, init_db, init_data
-from exception.globals import init_exception
 from api.bsae import router
+from exception.globals import init_exception
 
 
 # 事件监听

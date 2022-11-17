@@ -4,44 +4,25 @@
 """
 import typing
 from starlette import status
-from starlette.background import BackgroundTask
-from starlette.responses import Response
-from fastapi.responses import JSONResponse
+from pydantic import BaseModel, Field
 
 
-def success(code: int = status.HTTP_200_OK,
-            message: str = '请求成功',
-            data: typing.Any = None,
-            headers: typing.Optional[typing.Dict[str, str]] = None,
-            media_type: typing.Optional[str] = None,
-            background: typing.Optional[BackgroundTask] = None) -> Response:
-    return JSONResponse(
-        status_code=code,
-        media_type=media_type,
-        background=background,
-        headers=headers,
-        content={
-            'code': code,
-            'message': message,
-            'data': data
-        }
-    )
+class success(BaseModel):
+    code: int = Field(status.HTTP_200_OK, description='状态码')
+    message: str = Field('请求成功', description='响应消息')
+    data: typing.Any = Field(None, description='响应数据')
 
 
-def fail(code: int = status.HTTP_400_BAD_REQUEST,
-         message: str = '请求错误',
-         data: typing.Any = None,
-         headers: typing.Optional[typing.Dict[str, str]] = None,
-         media_type: typing.Optional[str] = None,
-         background: typing.Optional[BackgroundTask] = None) -> Response:
-    return JSONResponse(
-        status_code=code,
-        media_type=media_type,
-        background=background,
-        headers=headers,
-        content={
-            'code': code,
-            'message': message,
-            'data': data
-        }
-    )
+class fail(success):
+    code: int = Field(status.HTTP_400_BAD_REQUEST, description='状态码')
+    message: str = Field('请求失败', description='响应消息')
+
+
+class error(success):
+    code: int = Field(status.HTTP_500_INTERNAL_SERVER_ERROR, description='状态码')
+    message: str = Field('服务器错误', description='响应消息')
+
+
+class unauthorized(success):
+    code: int = Field(status.HTTP_401_UNAUTHORIZED, description='状态码')
+    message: str = Field('您还未登录，请先登录！', description='响应消息')
