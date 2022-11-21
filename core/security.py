@@ -7,6 +7,8 @@ from fastapi import Request
 from jose import jwt, JWTError, ExpiredSignatureError
 from passlib.context import CryptContext
 from sqlalchemy.orm import Session
+
+from exception.custom import UserNotFoundException, UserPasswordException, JwtVerifyException
 from schemas.token import Token
 from core.config import settings
 from database.mysql import get_db
@@ -57,10 +59,9 @@ def authenticate(username: str, password: str):
     """
     account = get_account(username)
     if not account:
-        return False
+        raise UserNotFoundException()
     if not verify_password(password, account.password):
-        return False
-    print(ACCESS_EXPIRE_TIME)
+        raise UserPasswordException()
     return Token(token=generate_token(account, ACCESS_EXPIRE_TIME), expired_time=ACCESS_EXPIRE_TIME)
 
 
@@ -83,7 +84,7 @@ def verify_token(request: Request):
     """
     payload = jwt.decode(request.headers.get(settings.JWT_SAVE_KEY), SECRET, algorithms=[ALGORITHM])
     if not payload:
-        return False
+        raise JwtVerifyException()
     return payload
 
 
@@ -96,14 +97,12 @@ def get_current_user(request: Request):
     try:
         payload = verify_token(request)
         if not payload:
-            return False
+            raise JwtVerifyException()
         username = payload.get('sub')
         if not username:
-            return False
+            raise JwtVerifyException()
         return get_account(username)
     except ExpiredSignatureError:
-        print('token过期...')
-        return False
+        raise JwtVerifyException('token过期')
     except JWTError:
-        print('验证失败...')
-        return False
+        raise JwtVerifyException('token验证失败')

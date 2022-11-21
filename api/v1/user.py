@@ -4,14 +4,14 @@
 """
 from fastapi import APIRouter, Body, Request
 from core.security import get_current_user
-from schemas import Success
+from schemas import success
 
 router = APIRouter()
 
 
 @router.get('/getCurrent', summary='查询当前用户')
 async def select_current_user(request: Request):
-    return Success(data=get_current_user(request))
+    return success(data=get_current_user(request))
 
 
 @router.get('/getAll', summary='查询用户(All)')

@@ -1,18 +1,31 @@
 """
-统一返回模型
+统一返回实体
 @Author:何同学
 """
+import json
 import typing
+
+from fastapi.encoders import jsonable_encoder
+from fastapi.responses import JSONResponse
 from starlette import status
-from pydantic import BaseModel, Field
 
 
-class Success(BaseModel):
-    code: int = Field(status.HTTP_200_OK, description='状态码')
-    message: str = Field('请求成功', description='响应消息')
-    data: typing.Any = Field(None, description='响应数据')
+def success(
+        *,
+        code: int = status.HTTP_200_OK,
+        headers: typing.Optional[typing.Dict[str, str]] = None,
+        message: str = 'success',
+        data: typing.Any | None = None
+):
+    return JSONResponse(status_code=code, headers=headers,
+                        content={'code': code, 'message': message, 'data': jsonable_encoder(data)})
 
 
-class Error(Success):
-    code: int = Field(status.HTTP_400_BAD_REQUEST, description='状态码')
-    message: str = Field('服务器错误', description='响应消息')
+def error(*,
+          code: int = status.HTTP_400_BAD_REQUEST,
+          headers: typing.Optional[typing.Dict[str, str]] = None,
+          message: str = 'error',
+          data: typing.Any | None = None
+          ):
+    return JSONResponse(status_code=code, headers=headers,
+                        content={'code': code, 'message': message, 'data': jsonable_encoder(data)})

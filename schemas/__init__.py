@@ -1,1 +1,1 @@
-from schemas.result import Success, Error
+from schemas.result import success, error

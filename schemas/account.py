@@ -1,5 +1,5 @@
 """
-账户模型
+账户实体
 @Author:何同学
 """
 from pydantic import BaseModel

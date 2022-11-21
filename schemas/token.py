@@ -1,5 +1,5 @@
 """
-token模型
+token实体
 @Author:何同学
 """
 from datetime import timedelta
