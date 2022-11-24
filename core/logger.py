@@ -17,8 +17,12 @@ LOGGER_ENCODING: str = 'utf-8'  # 全局编码
 LOGGER_MAX: int = 3  # 最大文件数
 
 
-# 创建日志文件名
 def logger_file() -> str:
+    """
+    创建日志文件名
+    :return: 文件名
+    """
+
     # 创建日志文件名
     log_path: str = files.create_dir(LOGGER_DIR)
 
