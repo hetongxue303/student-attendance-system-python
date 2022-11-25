@@ -1,5 +1,5 @@
 """
-专业实体
+专业
 @Author:何同学
 """
 from pydantic import BaseModel

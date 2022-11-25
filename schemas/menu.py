@@ -1,5 +1,5 @@
 """
-菜单实体
+菜单
 @Author:何同学
 """
 from pydantic import BaseModel

@@ -4,12 +4,11 @@
 """
 from datetime import timedelta, datetime
 
-from fastapi import Depends, Security
+from fastapi import Depends, Security, HTTPException
 from fastapi.security import OAuth2PasswordBearer, SecurityScopes
 from jose import jwt, ExpiredSignatureError, JWTError
 from passlib.context import CryptContext
 from sqlalchemy.orm import Session
-
 from core.config import settings
 from database.mysql import get_db
 from exception.custom import UserNotFoundException, UserPasswordException, SecurityScopeException, JwtVerifyException
@@ -18,8 +17,7 @@ from schemas.token import TokenData
 
 pwd_context = CryptContext(schemes=['bcrypt'], deprecated='auto')
 
-oAuth2 = OAuth2PasswordBearer(tokenUrl='/api/v1/login',
-                              scopes={'admin': '管理员', 'teacher': '教师', 'student': '学生'})
+oAuth2 = OAuth2PasswordBearer('/api/v1/login')
 
 
 def verify_password(plain_password: str, hashed_password: str):
@@ -63,7 +61,7 @@ def authenticate(username: str, password: str):
         raise UserNotFoundException()
     if not verify_password(password, user.password):
         raise UserPasswordException()
-    if user.status is '0':
+    if not bool(int(user.status)):
         raise SecurityScopeException(code=403, message='当前用户未激活')
     return user
 
@@ -85,10 +83,14 @@ def generate_token(data: dict, expires_time: int | None = None):
                       algorithm=settings.JWT_ALGORITHM)
 
 
-def get_current_user(security_scopes: SecurityScopes, token: str = Depends(oAuth2)):
+async def get_current_user(security_scopes: SecurityScopes, token: str = Depends(oAuth2)):
+    """
+    获取当前用户
+    :param security_scopes:
+    :param token:
+    :return: 账户信息
+    """
     try:
-        # if not security_scopes.scopes:
-        #     raise SecurityScopeException(message='请选择作用域！', headers={"WWW-Authenticate": 'Bearer '})
         payload = jwt.decode(token=token, key=settings.JWT_SECRET_KEY, algorithms=[settings.JWT_ALGORITHM])
         id = payload.get('id', None)
         username = payload.get('sub', None)
@@ -98,7 +100,7 @@ def get_current_user(security_scopes: SecurityScopes, token: str = Depends(oAuth
         token_data = TokenData(username=username, scopes=scopes)
         user = get_user(token_data.username)
         for scope in security_scopes.scopes:
-            if scope not in security_scopes.scopes:
+            if scope not in token_data.scopes:
                 raise SecurityScopeException(code=403, message='没有访问权限', headers={"WWW-Authenticate": 'Bearer '})
         return user
     except ExpiredSignatureError:

@@ -2,16 +2,14 @@
 用户相关
 @Author:何同学
 """
-from fastapi import APIRouter, Body, Request
-from core.security import get_current_user
-from schemas import success
+from fastapi import APIRouter, Body
 
 router = APIRouter()
 
 
 @router.get('/getCurrent', summary='查询当前用户')
-async def select_current_user(request: Request):
-    return success(data=get_current_user(request))
+async def select_current_user():
+    pass
 
 
 @router.get('/getAll', summary='查询用户(All)')

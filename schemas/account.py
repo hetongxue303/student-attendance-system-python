@@ -8,6 +8,12 @@ from pydantic import BaseModel
 class Account(BaseModel):
     account_id: int = None
     username: str = None
+    status: bool = None
+    del_flag: bool = None
+
+    class Config:
+        orm_mode = True
+
+
+class AccountInDB(Account):
     password: str = None
-    status: str = None
-    del_flag: str = None

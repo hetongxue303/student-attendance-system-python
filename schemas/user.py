@@ -1,5 +1,5 @@
 """
-用户实体
+用户
 @Author:何同学
 """
 from pydantic import BaseModel
