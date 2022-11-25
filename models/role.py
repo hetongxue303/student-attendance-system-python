@@ -19,4 +19,4 @@ class Role(Base):
 
     status = Column(Enum('0', '1'), nullable=False, server_default='1', comment='是否启用(1是 0否)')
 
-    del_flag = Column(Enum('0', '1'), nullable=False, server_default='1', comment='是否删除(1是 0否)')
+    del_flag = Column(Enum('0', '1'), nullable=False, server_default='0', comment='是否删除(1是 0否)')

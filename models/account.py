@@ -2,7 +2,7 @@
 账户表
 @Author:何同学
 """
-from sqlalchemy import Column, String, BigInteger, Enum, Integer
+from sqlalchemy import Column, String, BigInteger, Enum, DateTime, func
 
 from models.base import Base
 
@@ -19,4 +19,9 @@ class Account(Base):
 
     status = Column(Enum('0', '1'), nullable=False, server_default='1', comment='是否启用(1是 0否)')
 
-    del_flag = Column(Enum('0', '1'), nullable=False, server_default='1', comment='是否删除(1是 0否)')
+    del_flag = Column(Enum('0', '1'), nullable=False, server_default='0', comment='是否删除(1是 0否)')
+
+    last_login_ip = Column(String(100), server_default='0.0.0.0', comment='最后登录IP')
+
+    last_login_time = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(),
+                             comment='最后登录时间')

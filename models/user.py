@@ -18,13 +18,13 @@ class User(Base):
 
     role_id = Column(BigInteger, ForeignKey('role.role_id'), comment='角色ID')
 
-    user_no = Column(BigInteger, comment='学号/工号')
+    user_no = Column(BigInteger, nullable=False, comment='学号/工号')
 
-    nick_name = Column(String(30), comment='用户昵称')
+    nick_name = Column(String(30), nullable=False, comment='用户昵称')
 
     real_name = Column(String(30), comment='真实姓名')
 
-    gender = Column(Enum('1', '2', '3'), comment='性别(1:男 2:女 3:保密)')
+    gender = Column(Enum('1', '2', '3'), server_default='3', comment='性别(1:男 2:女 3:保密)')
 
     email = Column(String(50), comment='邮箱')
 
@@ -34,11 +34,6 @@ class User(Base):
 
     status = Column(Enum('0', '1'), nullable=False, server_default='1', comment='是否启用(1是 0否)')
 
-    del_flag = Column(Enum('0', '1'), nullable=False, server_default='1', comment='是否删除(1是 0否)')
+    del_flag = Column(Enum('0', '1'), nullable=False, server_default='0', comment='是否删除(1是 0否)')
 
     remark = Column(String(500), comment='备注')
-
-    last_login_ip = Column(String(100), comment='最后登录IP')
-
-    last_login_time = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(),
-                             comment='最后登录时间')

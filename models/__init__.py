@@ -9,3 +9,6 @@ from models.menu import *
 from models.college import *
 from models.major import *
 from models.user import *
+from models.account_user import *
+from models.account_role import *
+from models.role_menu import *
