@@ -37,7 +37,7 @@ class Settings(BaseSettings):
     JWT_ALGORITHM: str = 'HS256'
     # JWT_SECRET_KEY: str = secrets.token_urlsafe(32)  # 密钥(每次重启服务密钥都会改变, token解密失败导致过期, 可设置为常量)
     JWT_SECRET_KEY: str = '09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7'
-    JWT_EXPIRE: timedelta = timedelta(minutes=15)  # token过期时间: 15分钟
+    JWT_EXPIRE: int = 30 * 60 * 1000  # token过期时间: 15分钟 单位：毫秒
     JWT_IS_BEARER: bool = True  # 开启Bearer
 
     class Config:

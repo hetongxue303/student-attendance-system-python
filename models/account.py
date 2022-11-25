@@ -2,7 +2,7 @@
 账户表
 @Author:何同学
 """
-from sqlalchemy import Column, String, BigInteger, Enum
+from sqlalchemy import Column, String, BigInteger, Enum, Integer
 
 from models.base import Base
 

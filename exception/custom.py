@@ -22,3 +22,10 @@ class UnauthorizedException(Exception):
 class JwtVerifyException(Exception):
     def __init__(self, message: str = 'JWT解析失败'):
         self.message = message
+
+
+class SecurityScopeException(Exception):
+    def __init__(self, message: str = '请选择作用域！', code: int = 401, headers: dict = None):
+        self.message = message
+        self.headers = headers
+        self.code = code

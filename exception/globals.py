@@ -8,7 +8,7 @@ from jose import ExpiredSignatureError
 from starlette import status
 from starlette.requests import Request
 from core.logger import logger
-from exception.custom import UnauthorizedException, UserPasswordException, UserNotFoundException
+from exception.custom import UnauthorizedException, UserPasswordException, UserNotFoundException, SecurityScopeException
 from schemas.result import error, success
 
 
@@ -16,7 +16,7 @@ def init_exception(app: FastAPI):
     logger.success('全局异常捕获已开启！！！')
 
     @app.exception_handler(Exception)
-    async def exception_handler(request: Request, e: Exception):
+    async def http_exception(request: Request, e: Exception):
         return error(code=status.HTTP_500_INTERNAL_SERVER_ERROR, message="服务器内部错误")
 
     @app.exception_handler(UserNotFoundException)
@@ -33,3 +33,8 @@ def init_exception(app: FastAPI):
     async def http_exception(request: Request, e: UnauthorizedException):
         logger.warning(e.message)
         return error(code=status.HTTP_401_UNAUTHORIZED, message=e.message)
+
+    @app.exception_handler(SecurityScopeException)
+    async def http_exception(request: Request, e: SecurityScopeException):
+        logger.warning(e.message)
+        return error(code=e.code, message=e.message, headers=e.headers)
