@@ -3,6 +3,7 @@
 @Author:何同学
 """
 from sqlalchemy import Column, String, BigInteger, Enum, DateTime, func
+from sqlalchemy.orm import relationship
 
 from models.base import Base
 
@@ -25,3 +26,8 @@ class Account(Base):
 
     last_login_time = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(),
                              comment='最后登录时间')
+
+    # 多对多
+    role = relationship('Role', secondary='account_role', back_populates='account')
+
+    user = relationship('User', secondary='account_user', back_populates='account')

@@ -3,6 +3,7 @@
 @Author:何同学
 """
 from sqlalchemy import Column, BigInteger, String, Enum, Integer
+from sqlalchemy.orm import relationship
 
 from models.base import Base
 
@@ -40,3 +41,6 @@ class Menu(Base):
     del_flag = Column(Enum('0', '1'), nullable=False, server_default='0', comment='是否删除(1是 0否)')
 
     remark = Column(String(500), comment='备注')
+
+    # 多对多
+    role = relationship('Role', secondary='role_menu', back_populates='menu')

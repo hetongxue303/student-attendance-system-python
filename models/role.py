@@ -3,6 +3,7 @@
 @Author:何同学
 """
 from sqlalchemy import Column, BigInteger, String, Enum
+from sqlalchemy.orm import relationship
 
 from models.base import Base
 
@@ -20,3 +21,11 @@ class Role(Base):
     status = Column(Enum('0', '1'), nullable=False, server_default='1', comment='是否启用(1是 0否)')
 
     del_flag = Column(Enum('0', '1'), nullable=False, server_default='0', comment='是否删除(1是 0否)')
+
+    # 一对多
+    user = relationship('User', back_populates='role')
+
+    # 多对多
+    menu = relationship('Menu', secondary='role_menu', back_populates='role')
+
+    account = relationship('Account', secondary='account_role', back_populates='role')
