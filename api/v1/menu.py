@@ -2,14 +2,18 @@
 菜单相关
 @Author:何同学
 """
+import typing
+
 from fastapi import APIRouter, Body
+
+from schemas import success
 
 router = APIRouter()
 
 
-@router.get('/getAll', summary='查询菜单(All)')
+@router.get('/getAll', response_model=success[typing.Any], summary='查询菜单(All)')
 async def select_all():
-    pass
+    return success(data={'content': 'test'})
 
 
 @router.get('/getPage', summary='查询菜单(Page)')
