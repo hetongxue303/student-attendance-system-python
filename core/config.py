@@ -17,7 +17,7 @@ app_desc = """
 class Settings(BaseSettings):
     """ 应用配置 """
     APP_TITLE: str = '学生考勤系统'  # 应用标题
-    APP_API_PREFIX: str = '/api'  # 接口前缀
+    APP_API_PREFIX: str = ''  # 接口前缀
     APP_DEBUG: bool = True  # 是否debug
     APP_CORS: bool = True  # 是否跨域
     APP_DESC: str = app_desc  # 项目描述

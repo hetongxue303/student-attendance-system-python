@@ -12,11 +12,12 @@ router = APIRouter()
 
 
 @router.post('/login', response_model=Token, summary='登录认证')
-async def login(username: str = Form(), password: str = Form()):
+async def login(username: str = Form(), password: str = Form(), code: str = Form()):
     """
     用户登录
     :param username: 用户名
     :param password: 密码
+    :param code: 验证码
     :return: token
     """
     user = authenticate(username=username, password=password)
