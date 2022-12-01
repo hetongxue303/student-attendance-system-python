@@ -3,12 +3,13 @@
 @Author:何同学
 """
 from fastapi import APIRouter, Security
-from api.v1 import login, college, major, role, menu, user, account
+from api.v1 import auth, college, major, role, menu, user, account, test
 from core.security import get_current_user
 
 router = APIRouter(prefix='/v1')
 
-router.include_router(login.router, tags=['登录模块'])
+router.include_router(test.router, tags=['测试模块'])
+router.include_router(auth.router, tags=['安全模块'])
 router.include_router(account.router, tags=['账户模块'], prefix='/account', dependencies=[Security(get_current_user)])
 router.include_router(role.router, tags=['角色模块'], prefix='/role', dependencies=[Security(get_current_user)])
 router.include_router(menu.router, tags=['菜单模块'], prefix='/menu', dependencies=[Security(get_current_user)])
