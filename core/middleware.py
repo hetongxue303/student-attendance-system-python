@@ -27,17 +27,19 @@ def cors_middleware(app: FastAPI):
         )
         logger.success('跨域已开启！！！')
 
-        @app.middleware("http")
-        async def http_middleware(request: Request, call_next):
-            """
-            请求/响应拦截器
-            :param request: 请求
-            :param call_next: 下一步
-            :return: 响应体
-            """
-            start_time = time.time()
-            response = await call_next(request)
-            process_time = time.time() - start_time
-            response.headers["X-Process-Time"] = str(round(process_time, 2))
-            logger.debug('方法:{}  地址:{}  耗时:{} ms', request.method, request.url, str(round(process_time, 2)))
-            return response
+
+def http_middleware(app: FastAPI):
+    """
+    请求/响应拦截器
+    :param app:
+    :return:
+    """
+
+    @app.middleware("http")
+    async def http_middleware_init(request: Request, call_next):
+        start_time = time.time()
+        response = await call_next(request)
+        process_time = time.time() - start_time
+        response.headers["X-Process-Time"] = str(round(process_time, 2))
+        logger.debug('方法:{}  地址:{}  耗时:{} ms', request.method, request.url, str(round(process_time, 2)))
+        return response

@@ -4,11 +4,11 @@
 """
 from fastapi import FastAPI
 
-from core.config import settings
 from core.logger import logger
-from core.middleware import cors_middleware
-from database.mysql import drop_db, init_db, init_data
-from api.bsae import router
+from core.middleware import cors_middleware, http_middleware
+from core.redis import init_redis_pool
+from database.mysql import init_db
+from api.bsae import init_router
 from exception.globals import init_exception
 
 
@@ -25,13 +25,12 @@ def events_listen(app: FastAPI):
         应用程序启动之前执行
         :return: none
         """
-        drop_db()  # 删除数据结果
-        init_db()  # 初始化数据结构
-        init_data()  # 初始化表数据
-        cors_middleware(app)  # 开启跨域
+        init_db()  # 初始化数据库
+        cors_middleware(app)  # 配置跨域中间件
+        http_middleware(app)  # 配置http中间件
         init_exception(app)  # 开启全局异常捕获
-        # 注册路由
-        app.include_router(router, prefix=settings.APP_API_PREFIX)
+        init_router(app)  # 注册路由
+        await init_redis_pool(app)  # 初始化redis
         logger.success('启动成功！！！')
         logger.success('访问文档: http://127.0.0.1:8000/docs')
 
@@ -41,4 +40,5 @@ def events_listen(app: FastAPI):
         应用程序关闭之前执行
         :return:
         """
-        logger.success('停止...')
+        await app.state.redis.close()
+        logger.success('redis已关闭')

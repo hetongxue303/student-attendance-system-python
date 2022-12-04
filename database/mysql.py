@@ -39,8 +39,8 @@ def get_db():
         db.close()
 
 
-def init_db():
-    """ 初始化表结构 """
+def create_db():
+    """ 创建表结构 """
     try:
         Base.metadata.create_all(engine)
         logger.success('表结构创建成功!!!')
@@ -51,7 +51,7 @@ def init_db():
 
 
 def drop_db():
-    """ 删除所有表 """
+    """ 删除表结构 """
     try:
         Base.metadata.drop_all(engine)
         logger.success('表结构删除成功!!!')
@@ -78,3 +78,12 @@ def init_data():
         logger.error(f'初始化表数据失败 -- 错误信息如下:\n{e}')
     finally:
         engine.dispose()
+
+
+def init_db():
+    # 删除表和数据
+    drop_db()
+    # 创建表结构
+    create_db()
+    # 初始化表数据
+    init_data()
