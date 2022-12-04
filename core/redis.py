@@ -28,4 +28,5 @@ async def init_redis_pool(app: FastAPI):
 
 
 async def get_redis(request: Request) -> Redis:
-    return request.app.state.redis
+    redis: Redis = await request.app.state.redis
+    return redis

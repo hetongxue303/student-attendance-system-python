@@ -14,6 +14,11 @@ class UserPasswordException(Exception):
         self.message = message
 
 
+class CaptchaException(Exception):
+    def __init__(self, message: str = '验证码错误'):
+        self.message = message
+
+
 class UnauthorizedException(Exception):
     def __init__(self, message: str = '您还未登录,请先登录!'):
         self.message = message

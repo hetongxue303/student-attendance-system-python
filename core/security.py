@@ -4,14 +4,18 @@
 """
 from datetime import timedelta, datetime
 
-from fastapi import Depends, Security, HTTPException
+from aioredis import Redis
+from fastapi import Depends, Request
 from fastapi.security import OAuth2PasswordBearer, SecurityScopes
 from jose import jwt, ExpiredSignatureError, JWTError
 from passlib.context import CryptContext
 from sqlalchemy.orm import Session
+
+from core import const
 from core.config import settings
+from core.redis import get_redis
 from database.mysql import get_db
-from exception.custom import UserNotFoundException, UserPasswordException, SecurityScopeException, JwtVerifyException
+from exception.custom import *
 from models.account import Account
 from schemas.token import TokenData
 
@@ -107,3 +111,21 @@ async def get_current_user(security_scopes: SecurityScopes, token: str = Depends
         raise JwtVerifyException('凭证过期')
     except JWTError:
         raise JwtVerifyException('凭证解析失败')
+
+
+async def captcha_check(request: Request, code: str):
+    """
+    校验验证码
+    :param request:
+    :param code: 用户输入的验证码
+    :return:
+    """
+    redis: Redis = await get_redis(request)
+    save_code: str = await redis.get(name=const.CAPTCHA)
+    if not save_code:
+        raise CaptchaException(message='验证码过期')
+    if save_code != code:
+        await redis.delete(const.CAPTCHA)
+        raise CaptchaException(message='验证码错误')
+    await redis.delete(const.CAPTCHA)
+    return True

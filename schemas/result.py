@@ -31,7 +31,7 @@ def success_json(
         message: str = '请求成功',
         data: typing.Any | None = None
 ):
-    return JSONResponse(status_code=code, headers=headers,
+    return JSONResponse(status_code=status.HTTP_200_OK, headers=headers,
                         content={'code': code, 'message': message, 'data': jsonable_encoder(data)})
 
 

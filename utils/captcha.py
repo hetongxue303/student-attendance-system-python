@@ -4,9 +4,15 @@
 """
 import base64
 import random
+from datetime import timedelta
 from io import BytesIO
 
+from aioredis import Redis
+from fastapi import Request, Depends
 from captcha.image import ImageCaptcha
+
+from core import const
+from core.redis import get_redis
 
 SEED: str = '1234567890abcdefghijkmnpqrstuvwxyzABCDEFGHIJKLMNPQRSTUVWXYZ'
 LENGTH: int = 4
@@ -16,9 +22,11 @@ WIDTH: int = 160
 HEIGHT: int = 60
 
 
-def generate_captcha(length: int = LENGTH, range_str: str = SEED, img_format: str = IMG_FORMAT):
+async def generate_captcha(request: Request, length: int = LENGTH, range_str: str = SEED,
+                           img_format: str = IMG_FORMAT):
     """
     生成验证码
+    :param request: 请求
     :param length: 验证码长度
     :param range_str: 验证码字符范围
     :param img_format: 图片格式
@@ -29,4 +37,7 @@ def generate_captcha(length: int = LENGTH, range_str: str = SEED, img_format: st
     buffer = BytesIO()
     image.save(buffer, format=img_format)
     data = buffer.getvalue()
+    # 存储到 redis
+    redis: Redis = await get_redis(request)
+    await redis.setex(name=const.CAPTCHA, value=captcha_code, time=timedelta(minutes=1))
     return PREFIX + base64.b64encode(data).decode()

@@ -1,3 +1,6 @@
+from datetime import timedelta
+
+from aioredis import Redis
 from fastapi import APIRouter, Request
 
 from core.redis import get_redis
@@ -9,4 +12,5 @@ router = APIRouter()
 @router.post('/test', summary='测试')
 async def test(request: Request):
     print(generate_captcha())
-    await request.app.state.redis.set(name='test', value='123')
+    redis: Redis = await get_redis(request)
+    await redis.setex(name='11', value='123456', time=timedelta(seconds=15))
