@@ -12,13 +12,13 @@ from starlette import status
 T = typing.TypeVar("T")
 
 
-class success(GenericModel, typing.Generic[T]):
+class Success(GenericModel, typing.Generic[T]):
     code: typing.Optional[int] | None = status.HTTP_200_OK
     message: str | None = '请求成功'
     data: typing.Optional[T] | None = None
 
 
-class error(GenericModel, typing.Generic[T]):
+class Error(GenericModel, typing.Generic[T]):
     code: typing.Optional[int] | None = status.HTTP_400_BAD_REQUEST
     message: str | None = '请求错误'
     data: typing.Optional[T] | None = None

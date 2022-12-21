@@ -5,20 +5,29 @@
 from pydantic import BaseModel
 
 
-class User(BaseModel):
-    user_id: int = None
-    college_id: int = None
-    major_id: int = None
-    role_id: int = None
-    user_no: str = None
-    nick_name: str = None
+class UserLoginDto(BaseModel):
+    """
+    用户登录模型
+    """
+    avatar: str = None
+    is_admin: bool
+    username: str = None
+
+    class Config:
+        orm_mode = True
+
+
+class User(UserLoginDto):
+    user_id: int
+    password: str = None
     real_name: str = None
-    gender: str = None
+    gender: int
     email: str = None
     phone: str = None
-    avatar: str = None
-    status: str = None
-    del_flag: str = None
-    remark: str = None
-    last_login_ip: str = None
-    last_login_time: str = None
+    role: int
+    is_enable: bool
+    is_delete: bool
+    description: str = None
+
+    class Config:
+        orm_mode = True

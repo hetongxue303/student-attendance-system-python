@@ -2,12 +2,6 @@
 初始化数据
 @Author:何同学
 """
-account_data = [
-    {'username': 'admin', 'password': '$2b$12$q0OSa5wwpo1xkUfRCx2DZuPqWt04CQ.CNR.lV6oGqnpVmww2055Py'},
-    {'username': 'teacher', 'password': '$2b$12$q0OSa5wwpo1xkUfRCx2DZuPqWt04CQ.CNR.lV6oGqnpVmww2055Py'},
-    {'username': 'student', 'password': '$2b$12$q0OSa5wwpo1xkUfRCx2DZuPqWt04CQ.CNR.lV6oGqnpVmww2055Py'}
-]
-
 major_data = [
     {'name': '信息工程'},
     {'name': '物联网工程'},
@@ -544,40 +538,40 @@ account_user_data = [
 
 user_data = [
     {
-        'college_id': None,
-        'major_id': 1,
-        'role_id': 1,
-        'user_no': 1,
-        'nick_name': '何同学',
-        'real_name': 'hy',
+        'username': 'admin',
+        'password': '$2b$12$q0OSa5wwpo1xkUfRCx2DZuPqWt04CQ.CNR.lV6oGqnpVmww2055Py',
+        'real_name': '管理员',
         'gender': '1',
         'email': 'yhe.cq@qq.com',
         'phone': '15658594785',
-        'avatar': 'https://profile.csdnimg.cn/6/A/B/0_qq_14818715'
+        'avatar': 'https://profile.csdnimg.cn/6/A/B/0_qq_14818715',
+        'role': '1',
+        'is_admin': '1',
+        'is_enable': '1'
     },
     {
-        'college_id': 1,
-        'major_id': 1,
-        'role_id': 2,
-        'user_no': 10112,
-        'nick_name': '周雄',
-        'real_name': 'zx',
+        'username': 'teacher',
+        'password': '$2b$12$q0OSa5wwpo1xkUfRCx2DZuPqWt04CQ.CNR.lV6oGqnpVmww2055Py',
+        'real_name': '教师',
         'gender': '1',
-        'email': 'zhongxiong.cq@qq.com',
-        'phone': '15444585965',
-        'avatar': ''
+        'email': 'yhe.cq@qq.com',
+        'phone': '15658594785',
+        'avatar': 'https://profile.csdnimg.cn/6/A/B/0_qq_14818715',
+        'role': '1',
+        'is_admin': '1',
+        'is_enable': '1'
     },
     {
-        'college_id': 3,
-        'major_id': 1,
-        'role_id': 3,
-        'user_no': 2021230522,
-        'nick_name': '王丽',
-        'real_name': 'wl',
-        'gender': '2',
-        'email': '154865q.com',
-        'phone': '1544585658',
-        'avatar': ''
+        'username': 'student',
+        'password': '$2b$12$q0OSa5wwpo1xkUfRCx2DZuPqWt04CQ.CNR.lV6oGqnpVmww2055Py',
+        'real_name': '学生',
+        'gender': '1',
+        'email': 'yhe.cq@qq.com',
+        'phone': '15658594785',
+        'avatar': 'https://profile.csdnimg.cn/6/A/B/0_qq_14818715',
+        'role': '1',
+        'is_admin': '1',
+        'is_enable': '1'
     }
 ]
 

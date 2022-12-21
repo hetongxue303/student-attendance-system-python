@@ -14,18 +14,14 @@ class Role(Base):
 
     role_id = Column(BigInteger, primary_key=True, autoincrement=True, comment='角色ID')
 
-    role_name = Column(String(30), nullable=False, comment='角色名称')
+    role_name = Column(String(50), nullable=False, comment='角色名称')
 
-    role_key = Column(String(255), nullable=False, comment='角色key值')
+    role_key = Column(String(100), nullable=False, comment='角色key值')
 
     status = Column(Enum('0', '1'), nullable=False, server_default='1', comment='是否启用(1是 0否)')
 
-    del_flag = Column(Enum('0', '1'), nullable=False, server_default='0', comment='是否删除(1是 0否)')
+    is_enable = Column(Enum('0', '1'), nullable=False, server_default='0', comment='是否启用(1是 0否)')
 
-    # 一对多
-    user = relationship('User', back_populates='role')
+    is_delete = Column(Enum('0', '1'), nullable=False, server_default='0', comment='是否删除(1是 0否)')
 
-    # 多对多
-    menu = relationship('Menu', secondary='role_menu', back_populates='role')
-
-    account = relationship('Account', secondary='account_role', back_populates='role')
+    description = Column(String(500), server_default='空', comment='角色描述')

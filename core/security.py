@@ -13,10 +13,10 @@ from sqlalchemy.orm import Session
 
 from core import const
 from core.config import settings
-from core.redis import get_redis
+from database.redis import get_redis
 from database.mysql import get_db
 from exception.custom import *
-from models.account import Account
+from models import User
 from schemas.token import TokenData
 
 pwd_context = CryptContext(schemes=['bcrypt'], deprecated='auto')
@@ -50,7 +50,7 @@ def get_user(username: str, db: Session = next(get_db())):
     :param db: 数据库
     :return: 账户信息
     """
-    return db.query(Account).filter(Account.username == username).first()
+    return db.query(User).filter(User.username == username).first()
 
 
 def authenticate(username: str, password: str):
@@ -65,7 +65,7 @@ def authenticate(username: str, password: str):
         raise UserNotFoundException()
     if not verify_password(password, user.password):
         raise UserPasswordException()
-    if not bool(int(user.status)):
+    if not bool(int(user.is_enable)):
         raise SecurityScopeException(code=403, message='当前用户未激活')
     return user
 
@@ -87,30 +87,30 @@ def generate_token(data: dict, expires_time: int | None = None):
                       algorithm=settings.JWT_ALGORITHM)
 
 
-async def get_current_user(security_scopes: SecurityScopes, token: str = Depends(oAuth2)):
-    """
-    获取当前用户
-    :param security_scopes:
-    :param token:
-    :return: 账户信息
-    """
-    try:
-        payload = jwt.decode(token=token, key=settings.JWT_SECRET_KEY, algorithms=[settings.JWT_ALGORITHM])
-        id = payload.get('id', None)
-        username = payload.get('sub', None)
-        scopes = payload.get('scopes', None)
-        if not payload or id is None or username is None or scopes is None:
-            raise JwtVerifyException(message='无效凭证')
-        token_data = TokenData(username=username, scopes=scopes)
-        user = get_user(token_data.username)
-        for scope in security_scopes.scopes:
-            if scope not in token_data.scopes:
-                raise SecurityScopeException(code=403, message='没有访问权限', headers={"WWW-Authenticate": 'Bearer '})
-        return user
-    except ExpiredSignatureError:
-        raise JwtVerifyException('凭证过期')
-    except JWTError:
-        raise JwtVerifyException('凭证解析失败')
+# async def get_current_user(security_scopes: SecurityScopes, token: str = Depends(oAuth2)):
+#     """
+#     获取当前用户
+#     :param security_scopes:
+#     :param token:
+#     :return: 账户信息
+#     """
+#     try:
+#         payload = jwt.decode(token=token, key=settings.JWT_SECRET_KEY, algorithms=[settings.JWT_ALGORITHM])
+#         id = payload.get('id', None)
+#         username = payload.get('sub', None)
+#         scopes = payload.get('scopes', None)
+#         if not payload or id is None or username is None or scopes is None:
+#             raise JwtVerifyException(message='无效凭证')
+#         token_data = TokenData(username=username, scopes=scopes)
+#         user = get_user(token_data.username)
+#         for scope in security_scopes.scopes:
+#             if scope not in token_data.scopes:
+#                 raise SecurityScopeException(code=403, message='没有访问权限', headers={"WWW-Authenticate": 'Bearer '})
+#         return user
+#     except ExpiredSignatureError:
+#         raise JwtVerifyException('凭证过期')
+#     except JWTError:
+#         raise JwtVerifyException('凭证解析失败')
 
 
 async def captcha_check(request: Request, code: str):
@@ -124,7 +124,7 @@ async def captcha_check(request: Request, code: str):
     save_code: str = await redis.get(name=const.CAPTCHA)
     if not save_code:
         raise CaptchaException(message='验证码过期')
-    if save_code != code:
+    if save_code.lower() != code.lower():
         await redis.delete(const.CAPTCHA)
         raise CaptchaException(message='验证码错误')
     await redis.delete(const.CAPTCHA)

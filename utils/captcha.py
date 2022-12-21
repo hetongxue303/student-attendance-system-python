@@ -8,11 +8,11 @@ from datetime import timedelta
 from io import BytesIO
 
 from aioredis import Redis
-from fastapi import Request, Depends
+from fastapi import Request
 from captcha.image import ImageCaptcha
 
 from core import const
-from core.redis import get_redis
+from database.redis import get_redis
 
 SEED: str = '1234567890abcdefghijkmnpqrstuvwxyzABCDEFGHIJKLMNPQRSTUVWXYZ'
 LENGTH: int = 4

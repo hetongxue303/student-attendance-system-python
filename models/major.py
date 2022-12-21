@@ -14,11 +14,8 @@ class Major(Base):
 
     major_id = Column(BigInteger, primary_key=True, autoincrement=True, comment='专业ID')
 
-    name = Column(String(100), nullable=False, comment='专业名称')
+    major_name = Column(String(100), nullable=False, comment='专业名称')
 
-    remark = Column(String(255), comment='专业描述')
+    is_delete = Column(Enum('0', '1'), nullable=False, server_default='0', comment='是否删除(1是 0否)')
 
-    del_flag = Column(Enum('0', '1'), nullable=False, server_default='0', comment='是否删除(1是 0否)')
-
-    # 一对多
-    user = relationship('User', back_populates='major')
+    description = Column(String(255), server_default='空', comment='专业描述')

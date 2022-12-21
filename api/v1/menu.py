@@ -6,14 +6,13 @@ import typing
 
 from fastapi import APIRouter, Body
 
-from schemas import success
-
 router = APIRouter()
 
 
-@router.get('/getAll', response_model=success[typing.Any], summary='查询菜单(All)')
+@router.get('/getAll', summary='查询菜单(All)')
 async def select_all():
-    return success(data={'content': 'test'})
+    print('进方法')
+    pass
 
 
 @router.get('/getPage', summary='查询菜单(Page)')

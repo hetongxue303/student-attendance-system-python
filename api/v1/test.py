@@ -3,7 +3,7 @@ from datetime import timedelta
 from aioredis import Redis
 from fastapi import APIRouter, Request
 
-from core.redis import get_redis
+from database.redis import get_redis
 from utils.captcha import generate_captcha
 
 router = APIRouter()

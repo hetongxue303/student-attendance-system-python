@@ -6,9 +6,9 @@ from fastapi import FastAPI
 
 from core.logger import logger
 from core.middleware import cors_middleware, http_middleware
-from core.redis import init_redis_pool
 from database.mysql import init_db
 from api.bsae import init_router
+from database.redis import init_redis_pool
 from exception.globals import init_exception
 
 
