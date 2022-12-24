@@ -6,14 +6,13 @@ import typing
 from datetime import timedelta
 
 from aioredis import Redis
-from fastapi import APIRouter, Security, Form, Request
+from fastapi import APIRouter, Form, Request
 
 from core.config import settings
 from core.security import authenticate, generate_token, captcha_check
 from database.redis import get_redis
 from schemas.result import Success
 from schemas.token import Token
-from schemas.user import User, UserLoginDto
 from utils.captcha import generate_captcha
 
 router = APIRouter()

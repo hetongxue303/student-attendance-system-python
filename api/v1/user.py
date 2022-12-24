@@ -2,7 +2,13 @@
 用户相关
 @Author:何同学
 """
+import typing
+
 from fastapi import APIRouter, Body
+
+from crud.user import query_by_username
+from schemas.result import Success
+from schemas.user import User
 
 router = APIRouter()
 
@@ -40,3 +46,8 @@ async def delete_one(id: int):
 @router.put('/update/{id}', summary='修改用户')
 async def update_one(id: int):
     pass
+
+
+@router.get('/center', response_model=Success[User], summary='个人中心')
+async def get_center_info(username: str):
+    return Success(data=query_by_username(username))

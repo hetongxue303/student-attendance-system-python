@@ -28,6 +28,3 @@ class User(UserLoginDto):
     is_enable: bool
     is_delete: bool
     description: str = None
-
-    class Config:
-        orm_mode = True

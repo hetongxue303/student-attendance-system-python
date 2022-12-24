@@ -18,8 +18,6 @@ class Role(Base):
 
     role_key = Column(String(100), nullable=False, comment='角色key值')
 
-    status = Column(Enum('0', '1'), nullable=False, server_default='1', comment='是否启用(1是 0否)')
-
     is_enable = Column(Enum('0', '1'), nullable=False, server_default='0', comment='是否启用(1是 0否)')
 
     is_delete = Column(Enum('0', '1'), nullable=False, server_default='0', comment='是否删除(1是 0否)')

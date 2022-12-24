@@ -5,9 +5,9 @@
 from datetime import timedelta, datetime
 
 from aioredis import Redis
-from fastapi import Depends, Request
-from fastapi.security import OAuth2PasswordBearer, SecurityScopes
-from jose import jwt, ExpiredSignatureError, JWTError
+from fastapi import  Request
+from fastapi.security import OAuth2PasswordBearer
+from jose import jwt
 from passlib.context import CryptContext
 from sqlalchemy.orm import Session
 

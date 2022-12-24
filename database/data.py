@@ -2,28 +2,73 @@
 初始化数据
 @Author:何同学
 """
-major_data = [
-    {'name': '信息工程'},
-    {'name': '物联网工程'},
-    {'name': '电子信息工程'},
-    {'name': '电子工程与管理'}
+college_data = [
+    {'college_name': '通信与信息工程学院'},
+    {'college_name': '智能工程学院'},
+    {'college_name': '大数据与计算机科学学院'},
+    {'college_name': '艺术传媒学院'},
+    {'college_name': '外国语学院'},
+    {'college_name': '数字经济学院'},
+    {'college_name': '信息管理学院'},
+    {'college_name': '国际商务学院'}
 ]
 
-college_data = [
-    {'name': '通信与信息工程学院'},
-    {'name': '智能工程学院'},
-    {'name': '大数据与计算机科学学院'},
-    {'name': '艺术传媒学院'},
-    {'name': '外国语学院'},
-    {'name': '数字经济学院'},
-    {'name': '信息管理学院'},
-    {'name': '国际商务学院'}
+major_data = [
+    {'major_name': '信息工程'},
+    {'major_name': '物联网工程'},
+    {'major_name': '电子信息工程'},
+    {'major_name': '电子工程与管理'}
+]
+
+user_data = [
+    {
+        'username': 'admin',
+        'password': '$2b$12$q0OSa5wwpo1xkUfRCx2DZuPqWt04CQ.CNR.lV6oGqnpVmww2055Py',
+        'real_name': '管理员',
+        'gender': '1',
+        'email': 'yhe.cq@qq.com',
+        'phone': '15658594785',
+        'avatar': 'https://profile.csdnimg.cn/6/A/B/0_qq_14818715',
+        'role': '1',
+        'is_admin': '1',
+        'is_enable': '1'
+    },
+    {
+        'username': 'teacher',
+        'password': '$2b$12$q0OSa5wwpo1xkUfRCx2DZuPqWt04CQ.CNR.lV6oGqnpVmww2055Py',
+        'real_name': '教师',
+        'gender': '1',
+        'email': 'yhe.cq@qq.com',
+        'phone': '15658594785',
+        'avatar': 'https://profile.csdnimg.cn/6/A/B/0_qq_14818715',
+        'role': '2',
+        'is_admin': '0',
+        'is_enable': '1'
+    },
+    {
+        'username': 'student',
+        'password': '$2b$12$q0OSa5wwpo1xkUfRCx2DZuPqWt04CQ.CNR.lV6oGqnpVmww2055Py',
+        'real_name': '学生',
+        'gender': '1',
+        'email': 'yhe.cq@qq.com',
+        'phone': '15658594785',
+        'avatar': 'https://profile.csdnimg.cn/6/A/B/0_qq_14818715',
+        'role': '3',
+        'is_admin': '0',
+        'is_enable': '1'
+    }
 ]
 
 role_data = [
-    {'role_name': '超级管理员', 'role_key': 'admin'},
-    {'role_name': '教师', 'role_key': 'teacher'},
-    {'role_name': '学生', 'role_key': 'student'}
+    {'role_name': '超级管理员', 'role_key': 'admin', 'is_enable': '1'},
+    {'role_name': '教师', 'role_key': 'teacher', 'is_enable': '1'},
+    {'role_name': '学生', 'role_key': 'student', 'is_enable': '1'}
+]
+
+user_role_data = [
+    {'user_id': 1, 'role_id': 1},
+    {'user_id': 2, 'role_id': 2},
+    {'user_id': 3, 'role_id': 3}
 ]
 
 menu_data = [
@@ -521,57 +566,6 @@ menu_data = [
         'sort': 45,
         'icon': 'about',
         'per_key': None
-    }
-]
-
-account_role_data = [
-    {'account_id': 1, 'role_id': 1},
-    {'account_id': 2, 'role_id': 2},
-    {'account_id': 3, 'role_id': 3}
-]
-
-account_user_data = [
-    {'account_id': 1, 'user_id': 1},
-    {'account_id': 2, 'user_id': 2},
-    {'account_id': 3, 'user_id': 3}
-]
-
-user_data = [
-    {
-        'username': 'admin',
-        'password': '$2b$12$q0OSa5wwpo1xkUfRCx2DZuPqWt04CQ.CNR.lV6oGqnpVmww2055Py',
-        'real_name': '管理员',
-        'gender': '1',
-        'email': 'yhe.cq@qq.com',
-        'phone': '15658594785',
-        'avatar': 'https://profile.csdnimg.cn/6/A/B/0_qq_14818715',
-        'role': '1',
-        'is_admin': '1',
-        'is_enable': '1'
-    },
-    {
-        'username': 'teacher',
-        'password': '$2b$12$q0OSa5wwpo1xkUfRCx2DZuPqWt04CQ.CNR.lV6oGqnpVmww2055Py',
-        'real_name': '教师',
-        'gender': '1',
-        'email': 'yhe.cq@qq.com',
-        'phone': '15658594785',
-        'avatar': 'https://profile.csdnimg.cn/6/A/B/0_qq_14818715',
-        'role': '1',
-        'is_admin': '1',
-        'is_enable': '1'
-    },
-    {
-        'username': 'student',
-        'password': '$2b$12$q0OSa5wwpo1xkUfRCx2DZuPqWt04CQ.CNR.lV6oGqnpVmww2055Py',
-        'real_name': '学生',
-        'gender': '1',
-        'email': 'yhe.cq@qq.com',
-        'phone': '15658594785',
-        'avatar': 'https://profile.csdnimg.cn/6/A/B/0_qq_14818715',
-        'role': '1',
-        'is_admin': '1',
-        'is_enable': '1'
     }
 ]
 
