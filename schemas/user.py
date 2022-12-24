@@ -4,8 +4,10 @@
 """
 from pydantic import BaseModel
 
+from schemas.common import Common
 
-class UserLoginDto(BaseModel):
+
+class LoginDto(Common):
     """
     用户登录模型
     """
@@ -17,7 +19,7 @@ class UserLoginDto(BaseModel):
         orm_mode = True
 
 
-class User(UserLoginDto):
+class User(LoginDto):
     user_id: int
     password: str = None
     real_name: str = None

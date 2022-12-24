@@ -8,5 +8,5 @@ from database.mysql import get_db
 from models import User
 
 
-def query_by_username(username: str, db: Session = next(get_db())):
+def query_user_by_username(username: str, db: Session = next(get_db())):
     return db.query(User).filter(User.username == username).first()

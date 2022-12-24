@@ -6,9 +6,8 @@ import typing
 
 from fastapi import APIRouter, Body
 
-from crud.user import query_by_username
+from crud.college import query_college_list_page, delete_college_by_id
 from schemas.result import Success
-from schemas.user import User
 
 router = APIRouter()
 
@@ -48,6 +47,7 @@ async def update_one(id: int):
     pass
 
 
-@router.get('/center', response_model=Success[User], summary='个人中心')
+@router.get('/center', response_model=Success[typing.Any], summary='个人中心')
 async def get_center_info(username: str):
-    return Success(data=query_by_username(username))
+    delete_college_by_id(1)
+    return Success(data=None)

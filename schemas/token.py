@@ -6,7 +6,7 @@ from datetime import timedelta
 from typing import List
 from pydantic import BaseModel
 
-from schemas.user import UserLoginDto
+from schemas.user import LoginDto
 
 
 class Token(BaseModel):
@@ -14,7 +14,7 @@ class Token(BaseModel):
     message: str
     access_token: str
     expired_time: timedelta
-    user: UserLoginDto
+    user: LoginDto
 
     class Config:
         orm_mode = True
