@@ -1,6 +1,10 @@
+import typing
 from datetime import datetime
 
 from pydantic import BaseModel
+from pydantic.generics import GenericModel
+
+ModelType = typing.TypeVar("ModelType")
 
 
 class Common(BaseModel):
@@ -9,3 +13,8 @@ class Common(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class Page(GenericModel, typing.Generic[ModelType]):
+    total: int
+    record: typing.Optional[ModelType] | None = None

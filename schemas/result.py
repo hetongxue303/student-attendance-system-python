@@ -1,5 +1,5 @@
 """
-统一返回
+统一返回模型
 @Author:何同学
 """
 import typing
@@ -9,12 +9,21 @@ from fastapi.responses import JSONResponse
 from pydantic.generics import GenericModel
 from starlette import status
 
+from schemas.common import Page
+
 T = typing.TypeVar("T")
 
 
 class Success(GenericModel, typing.Generic[T]):
     code: typing.Optional[int] | None = status.HTTP_200_OK
     message: str | None = '请求成功'
+    data: typing.Optional[T] | None = None
+
+
+class Success_Page(GenericModel, typing.Generic[T]):
+    code: typing.Optional[int] | None = status.HTTP_200_OK
+    message: str | None = '请求成功'
+    total: int
     data: typing.Optional[T] | None = None
 
 

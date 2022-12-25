@@ -9,19 +9,21 @@ from sqlalchemy.orm import Session
 from database.mysql import get_db
 from models import College
 from schemas.college import CollegeDto
+from schemas.common import Page
 
 db: Session = next(get_db())
 
 
-def query_college_list_all() -> List[College]:
+def query_college_list_all() -> Page[List[CollegeDto]]:
     """
     查询所有学院
     :return:
     """
-    return db.query(College).filter(College.is_delete == '0').all()
+    return Page(total=db.query(College).filter(College.is_delete == '0').count(),
+                record=db.query(College).filter(College.is_delete == '0').all())
 
 
-def query_college_list_page(current_page: int, page_size: int, college_name: str) -> List[College]:
+def query_college_list_page(current_page: int, page_size: int, college_name: str) -> Page[List[CollegeDto]]:
     """
     分页查询学院列表
     :param current_page: 当前页
@@ -30,10 +32,14 @@ def query_college_list_page(current_page: int, page_size: int, college_name: str
     :return: 学院列表
     """
     if college_name:
-        return db.query(College).filter(College.is_delete == '0',
-                                        College.college_name.like('%{0}%'.format(college_name))).limit(
-            page_size).offset((current_page - 1) * page_size).all()
-    return db.query(College).filter_by(is_delete='0').limit(page_size).offset((current_page - 1) * page_size).all()
+        return Page(total=db.query(College).filter(College.is_delete == '0',
+                                                   College.college_name.like('%{0}%'.format(college_name))).count(),
+                    record=db.query(College).filter(College.is_delete == '0',
+                                                    College.college_name.like('%{0}%'.format(college_name))).limit(
+                        page_size).offset((current_page - 1) * page_size).all())
+    return Page(total=db.query(College).filter(College.is_delete == '0').count(),
+                record=db.query(College).filter(College.is_delete == '0').limit(page_size).offset(
+                    (current_page - 1) * page_size).all())
 
 
 def insert_college(college: CollegeDto):

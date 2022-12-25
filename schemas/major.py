@@ -1,12 +1,12 @@
 """
-学院模型
+专业模型
 @Author:何同学
 """
 from schemas.common import Common
 
 
-class CollegeDto(Common):
-    college_id: int = None
-    college_name: str = None
+class MajorDto(Common):
+    major_id: int = None
+    major_name: str = None
     is_delete: bool = None
     description: str = None

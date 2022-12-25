@@ -1,5 +1,5 @@
 """
-用户
+用户模型
 @Author:何同学
 """
 from pydantic import BaseModel
