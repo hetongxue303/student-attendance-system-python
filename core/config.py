@@ -30,14 +30,14 @@ class Settings(BaseSettings):
     """ 数据源配置 """
     REDIS_URI: str = 'redis://:123456@127.0.0.1:6379/1'  # redis
     DATABASE_URI: str = 'mysql+pymysql://root:123456@127.0.0.1:3306/student_attendance_system?charset=utf8'  # mysql
-    DATABASE_ECHO: bool = True  # 是否打印数据库日志 (可看到创建表、表数据增删改查的信息)
+    DATABASE_ECHO: bool = False  # 是否打印数据库日志 (可看到创建表、表数据增删改查的信息)
 
     """ JWT配置 """
     JWT_SAVE_KEY = 'auth'
     JWT_ALGORITHM: str = 'HS256'
     # JWT_SECRET_KEY: str = secrets.token_urlsafe(32)  # 密钥(每次重启服务密钥都会改变, token解密失败导致过期, 可设置为常量)
     JWT_SECRET_KEY: str = '09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7'
-    JWT_EXPIRE: int = 30 * 60 * 1000  # token过期时间: 15分钟 单位：毫秒
+    JWT_EXPIRE: int = 30 * 60 * 1000  # token过期时间: 30分钟 单位：毫秒
     JWT_IS_BEARER: bool = True  # 开启Bearer
 
     class Config:

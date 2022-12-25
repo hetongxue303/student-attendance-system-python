@@ -2,14 +2,14 @@
 路由配置
 @Author:何同学
 """
-from fastapi import APIRouter, Security, FastAPI
-from api.v1 import auth, college, major, role, menu, user, test
+from fastapi import APIRouter, FastAPI
+from api.v1 import security, college, major, role, menu, user, test
 from core.config import settings
 
 router = APIRouter(prefix='/v1')
 
 router.include_router(test.router, tags=['测试模块'])
-router.include_router(auth.router, tags=['安全模块'])
+router.include_router(security.router, tags=['安全模块'])
 # router.include_router(role.router, tags=['角色模块'], prefix='/role', dependencies=[Security(get_current_user)])
 router.include_router(role.router, tags=['角色模块'], prefix='/role')
 router.include_router(menu.router, tags=['菜单模块'], prefix='/menu')

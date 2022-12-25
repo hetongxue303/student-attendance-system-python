@@ -18,7 +18,7 @@ def query_college_list_all() -> List[College]:
     查询所有学院
     :return:
     """
-    return db.query(College).filter_by(is_delete='0').all()
+    return db.query(College).filter(College.is_delete == '0').all()
 
 
 def query_college_list_page(current_page: int, page_size: int, college_name: str) -> List[College]:
@@ -51,7 +51,7 @@ def delete_college_by_id(id: int):
     :param id: 学院ID
     :return:
     """
-    item: College = db.query(College).filter_by(college_id=id).first()
+    item: College = db.query(College).filter(College.college_id == id).first()
     item.is_delete = '1'
     db.commit()
 
@@ -62,7 +62,7 @@ def update_college_by_id(data: CollegeDto):
     :param data: 学院信息
     :return:
     """
-    item: College = db.query(College).filter_by(college_id=data.college_id).first()
+    item: College = db.query(College).filter(College.college_id == data.college_id).first()
     item.college_name = data.college_name
     item.description = data.description
     db.commit()

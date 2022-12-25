@@ -4,12 +4,16 @@
 """
 import time
 
+from aioredis import Redis
 from fastapi import FastAPI
 from jose import jwt, ExpiredSignatureError, JWTError
 from starlette.middleware.cors import CORSMiddleware
 from starlette.requests import Request
+
+from core import Const
 from core.logger import logger
 from core.config import settings
+from database.redis import get_redis
 from exception.custom import JwtVerifyException, CaptchaException
 from schemas.result import success_json, error_json
 
@@ -43,20 +47,35 @@ def http_middleware(app: FastAPI):
 
     @app.middleware("http")
     async def http_middleware_init(request: Request, call_next):
+        """
+        每次请求判断除白名单之外得所有请求是否携带有token
+        有：放行
+        无：抛异常并返回错误信息
+        :param request:
+        :param call_next:
+        :return:
+        """
         start_time = time.time()
         response = await call_next(request)
         if request.url.path not in WHITE_LIST:
             try:
                 token = request.headers.get('access_token')
                 payload = jwt.decode(token=token, key=settings.JWT_SECRET_KEY, algorithms=[settings.JWT_ALGORITHM])
-                id = payload.get('id', None)
-                username = payload.get('sub', None)
-                scopes = payload.get('scopes', None)
-                if not payload or id is None or username is None or scopes is None:
+                redis: Redis = await get_redis(request)
+                save_token: str = await redis.get(name=Const.TOKEN)
+                # token不存在
+                if not token:
+                    logger.warning('凭证不存在')
+                    return error_json(message='凭证不存在', code=401)
+                # 与redis中的token不匹配
+                if not save_token or save_token != token:
+                    logger.warning('无效凭证')
                     return error_json(message='无效凭证', code=401)
             except ExpiredSignatureError:
+                logger.warning('凭证过期')
                 return error_json(message='凭证过期', code=401)
             except JWTError:
+                logger.warning('凭证异常')
                 return error_json(message='凭证异常', code=401)
         process_time = time.time() - start_time
         response.headers["X-Process-Time"] = str(round(process_time, 2))

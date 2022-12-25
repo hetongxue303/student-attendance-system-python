@@ -8,6 +8,7 @@ from datetime import timedelta
 from aioredis import Redis
 from fastapi import APIRouter, Form, Request
 
+from core import Const
 from core.config import settings
 from core.security import authenticate, generate_token, captcha_check
 from database.redis import get_redis
@@ -34,7 +35,7 @@ async def login(request: Request, username: str = Form(), password: str = Form()
         scopes = []
         token = generate_token({'id': user.user_id, 'sub': user.username, 'scopes': scopes})
         redis: Redis = await get_redis(request)
-        await redis.setex(name='token', value=token, time=timedelta(minutes=30))
+        await redis.setex(name=Const.TOKEN, value=token, time=timedelta(milliseconds=settings.JWT_EXPIRE))
         return Token(code=200, message='登陆成功', access_token=token, expired_time=settings.JWT_EXPIRE,
                      user=user)
 

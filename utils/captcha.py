@@ -11,7 +11,7 @@ from aioredis import Redis
 from fastapi import Request
 from captcha.image import ImageCaptcha
 
-from core import const
+from core import const, Const
 from database.redis import get_redis
 
 SEED: str = '1234567890abcdefghijkmnpqrstuvwxyzABCDEFGHIJKLMNPQRSTUVWXYZ'
@@ -39,5 +39,5 @@ async def generate_captcha(request: Request, length: int = LENGTH, range_str: st
     data = buffer.getvalue()
     # 存储到 redis
     redis: Redis = await get_redis(request)
-    await redis.setex(name=const.CAPTCHA, value=captcha_code, time=timedelta(minutes=1))
+    await redis.setex(name=Const.CAPTCHA, value=captcha_code, time=timedelta(minutes=1))
     return PREFIX + base64.b64encode(data).decode()

@@ -5,19 +5,18 @@
 from datetime import timedelta, datetime
 
 from aioredis import Redis
-from fastapi import  Request
+from fastapi import Request
 from fastapi.security import OAuth2PasswordBearer
 from jose import jwt
 from passlib.context import CryptContext
 from sqlalchemy.orm import Session
 
-from core import const
+from core import Const
 from core.config import settings
 from database.redis import get_redis
 from database.mysql import get_db
 from exception.custom import *
 from models import User
-from schemas.token import TokenData
 
 pwd_context = CryptContext(schemes=['bcrypt'], deprecated='auto')
 
@@ -121,11 +120,11 @@ async def captcha_check(request: Request, code: str):
     :return:
     """
     redis: Redis = await get_redis(request)
-    save_code: str = await redis.get(name=const.CAPTCHA)
+    save_code: str = await redis.get(name=Const.CAPTCHA)
     if not save_code:
         raise CaptchaException(message='验证码过期')
     if save_code.lower() != code.lower():
-        await redis.delete(const.CAPTCHA)
+        await redis.delete(Const.CAPTCHA)
         raise CaptchaException(message='验证码错误')
-    await redis.delete(const.CAPTCHA)
+    await redis.delete(Const.CAPTCHA)
     return True
