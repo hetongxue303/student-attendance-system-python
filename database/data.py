@@ -71,6 +71,13 @@ user_role_data = [
     {'user_id': 3, 'role_id': 3}
 ]
 
+course_data = [
+    {'teacher_id': 2, 'course_name': '物联网工程', 'count': 45, 'choice': 0},
+    {'teacher_id': 2, 'course_name': 'JAVA实践', 'count': 55, 'choice': 0},
+    {'teacher_id': 2, 'course_name': '算法结构', 'count': 30, 'choice': 0},
+    {'teacher_id': 2, 'course_name': '数据库设计', 'count': 40, 'choice': 0}
+]
+
 menu_data = [
     {
         'menu_name': 'user',

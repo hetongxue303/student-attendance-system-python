@@ -5,7 +5,7 @@
 import typing
 from typing import List
 
-from fastapi import APIRouter, Body
+from fastapi import APIRouter
 
 from crud.major import query_major_list_all, query_major_list_page, insert_major, delete_major_by_id, update_major_by_id
 from schemas.common import Page

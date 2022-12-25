@@ -3,23 +3,27 @@
 @Author:何同学
 """
 import typing
+from typing import List
 
 from fastapi import APIRouter, Body
 
-from crud.college import query_college_list_page, delete_college_by_id
+from crud.college import delete_college_by_id
+from crud.user import query_user_by_role
 from schemas.result import Success
+from schemas.user import UserDtoOut
 
 router = APIRouter()
-
-
-@router.get('/getCurrent', summary='查询当前用户')
-async def select_current_user():
-    pass
 
 
 @router.get('/getAll', summary='查询用户(All)')
 async def select_all():
     pass
+
+
+@router.get('/getAll/{role}', response_model=Success[List[UserDtoOut]], summary='查询用户(All)')
+async def select_all(role: int):
+    users = query_user_by_role(role=role)
+    return Success(data=users, message='查询成功')
 
 
 @router.get('/getPage', summary='查询用户(Page)')

@@ -7,8 +7,9 @@ from sqlalchemy.orm import sessionmaker
 
 from core.logger import logger
 from core.config import settings
-from database.data import user_data, college_data, major_data, role_data, user_role_data
+from database.data import user_data, college_data, major_data, role_data, user_role_data, course_data
 from models import User, Base, College, Major, Role, User_Role
+from models.course import Course
 
 # 创建引擎
 engine = create_engine(
@@ -68,6 +69,7 @@ def init_data():
         engine.execute(User_Role.__table__.insert(), [user_role for user_role in user_role_data])
         engine.execute(College.__table__.insert(), [college for college in college_data])
         engine.execute(Major.__table__.insert(), [major for major in major_data])
+        engine.execute(Course.__table__.insert(), [course for course in course_data])
         logger.success('初始化表数据成功!!!')
     except Exception as e:
         logger.error(f'初始化表数据失败 -- 错误信息如下:\n{e}')

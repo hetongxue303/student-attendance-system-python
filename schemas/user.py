@@ -19,9 +19,8 @@ class LoginDto(Common):
         orm_mode = True
 
 
-class User(LoginDto):
+class UserDtoOut(LoginDto):
     user_id: int
-    password: str = None
     real_name: str = None
     gender: int
     email: str = None
@@ -30,3 +29,7 @@ class User(LoginDto):
     is_enable: bool
     is_delete: bool
     description: str = None
+
+
+class UserDto(UserDtoOut):
+    password: str = None

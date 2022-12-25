@@ -3,7 +3,6 @@
 @Author:何同学
 """
 from sqlalchemy import Column, BigInteger, String, Enum
-from sqlalchemy.orm import relationship
 
 from models.base import Base
 
