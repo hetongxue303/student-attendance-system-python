@@ -33,3 +33,21 @@ class UserDtoOut(LoginDto):
 
 class UserDto(UserDtoOut):
     password: str = None
+
+
+class up_email(BaseModel):
+    email: str = None
+    code: str = None
+    password: str = None
+
+    class Config:
+        orm_mode = True
+
+
+class up_password(BaseModel):
+    old_password: str = None
+    new_password: str = None
+    confirm_password: str = None
+
+    class Config:
+        orm_mode = True

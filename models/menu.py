@@ -18,8 +18,7 @@ class Menu(Base):
 
     menu_title = Column(String(50), nullable=False, comment='菜单标题')
 
-    menu_type = Column(Enum('1', '2', '3'), nullable=False, server_default='1',
-                       comment='菜单类型(1:目录 2:菜单 3:按钮)')
+    menu_type = Column(Enum('1', '2', '3'), server_default='1', comment='菜单类型(1:目录 2:菜单 3:按钮)')
 
     parent_id = Column(BigInteger, nullable=False, server_default='0', comment='父菜单ID')
 
@@ -29,16 +28,18 @@ class Menu(Base):
 
     sort = Column(Integer, nullable=False, comment='菜单排序')
 
+    redirect = Column(String(200), comment='重定向地址')
+
     icon = Column(String(100), comment='图标名称')
 
     per_key = Column(String(200), comment='权限标识')
 
-    is_show = Column(Enum('0', '1'), nullable=False, server_default='1', comment='是否显示(1是 0否)')
+    is_show = Column(Enum('0', '1'), server_default='1', comment='是否显示(1是 0否)')
 
-    is_sub = Column(Enum('0', '1'), nullable=False, server_default='0', comment='是否有子菜单(1是 0否)')
+    is_sub = Column(Enum('0', '1'), server_default='0', comment='是否有子菜单(1是 0否)')
 
-    is_cache = Column(Enum('0', '1'), nullable=False, server_default='0', comment='是否缓存(1是 0否)')
+    is_cache = Column(Enum('0', '1'), server_default='0', comment='是否缓存(1是 0否)')
 
-    is_delete = Column(Enum('0', '1'), nullable=False, server_default='0', comment='是否删除(1是 0否)')
+    is_delete = Column(Enum('0', '1'), server_default='0', comment='是否删除(1是 0否)')
 
     description = Column(String(500), server_default='空', comment='菜单描述')

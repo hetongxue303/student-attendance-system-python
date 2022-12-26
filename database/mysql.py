@@ -7,8 +7,9 @@ from sqlalchemy.orm import sessionmaker
 
 from core.logger import logger
 from core.config import settings
-from database.data import user_data, college_data, major_data, role_data, user_role_data, course_data
-from models import User, Base, College, Major, Role, User_Role
+from database.data import user_data, college_data, major_data, role_data, user_role_data, course_data, menu_data, \
+    role_menu_data
+from models import User, Base, College, Major, Role, User_Role, Menu, Role_Menu
 from models.course import Course
 
 # 创建引擎
@@ -67,6 +68,8 @@ def init_data():
         engine.execute(User.__table__.insert(), [user for user in user_data])
         engine.execute(Role.__table__.insert(), [role for role in role_data])
         engine.execute(User_Role.__table__.insert(), [user_role for user_role in user_role_data])
+        engine.execute(Menu.__table__.insert(), [menu for menu in menu_data])
+        engine.execute(Role_Menu.__table__.insert(), [role_menu for role_menu in role_menu_data])
         engine.execute(College.__table__.insert(), [college for college in college_data])
         engine.execute(Major.__table__.insert(), [major for major in major_data])
         engine.execute(Course.__table__.insert(), [course for course in course_data])

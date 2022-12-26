@@ -23,6 +23,8 @@ class Course(Base):
 
     choice = Column(Integer, nullable=False, server_default='0', comment='课程已选人数')
 
+    time = Column(Integer, nullable=False, server_default='0', comment='课时')
+
     is_delete = Column(Enum('0', '1'), nullable=False, server_default='0', comment='是否删除(1是 0否)')
 
     description = Column(String(500), server_default='空', comment='学院描述')
