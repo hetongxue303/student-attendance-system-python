@@ -6,4 +6,4 @@
 
 class Const:
     CAPTCHA: str = 'captcha'
-    TOKEN: str = 'token'
+    TOKEN: str = 'authorization'

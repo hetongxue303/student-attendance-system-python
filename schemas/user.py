@@ -8,10 +8,9 @@ from pydantic import BaseModel
 
 from schemas.common import Common
 from schemas.menu import MenuDto
-from schemas.role import RoleDto
 
 
-class LoginDto(Common):
+class LoginDto(BaseModel):
     """
     用户登录模型
     """
@@ -20,19 +19,22 @@ class LoginDto(Common):
     username: str = None
     menus: List[MenuDto] = None
     permissions: List[str] = None
-    roles: List[RoleDto] = None
+    roles: List[str] = None
 
     class Config:
         orm_mode = True
 
 
-class UserDtoOut(LoginDto):
+class UserDtoOut(Common):
     user_id: int
+    username: str = None
     real_name: str = None
+    avatar: str = None
     gender: int
     email: str = None
     phone: str = None
     role: int
+    is_admin: bool
     is_enable: bool
     is_delete: bool
     description: str = None

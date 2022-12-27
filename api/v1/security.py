@@ -8,7 +8,8 @@ from datetime import timedelta
 
 import jsonpickle
 from aioredis import Redis
-from fastapi import APIRouter, Form
+from fastapi import APIRouter, Form, Depends
+from fastapi.security import SecurityScopes, OAuth2PasswordRequestForm
 
 from core import Const
 from core.config import settings
@@ -26,30 +27,35 @@ router = APIRouter()
 
 
 @router.post('/login', response_model=Token, summary='登录认证')
-async def login(username: str = Form(), password: str = Form(), code: str = Form()):
+async def login(data: OAuth2PasswordRequestForm = Depends(), code: str = Form()):
     """
     用户登录
-    :param username: 用户名
-    :param password: 密码
+    :param data: 用户数据
     :param code: 验证码
     :return: token
     """
     redis: Redis = await get_redis()
     if await captcha_check(code=code):
-        user = await authenticate(username=username, password=password)
+        user = await authenticate(username=data.username, password=data.password)
         await set_current_user_info(user.user_id)
         scopes: List[str] = await generate_scope()
         roles: List[RoleDto] = jsonpickle.decode(await redis.get('current-role-data'))
         menus: List[MenuDto] = jsonpickle.decode(await redis.get('current-menu-data'))
+        role_key: List[str] = []
+        if roles:
+            for role in roles:
+                role_key.append(role.role_key)
         token: str = await generate_token({'id': user.user_id, 'sub': user.username, 'scopes': scopes})
         await redis.setex(name=Const.TOKEN, value=token, time=timedelta(milliseconds=settings.JWT_EXPIRE))
+        await redis.setex(name='scopes', value=jsonpickle.encode(scopes),
+                          time=timedelta(milliseconds=settings.JWT_EXPIRE))
         return Token(code=200,
                      message='登陆成功',
                      access_token=token,
                      expired_time=settings.JWT_EXPIRE,
-                     user=LoginDto(avatar=user.avatar, is_admin=user.is_admin,
+                     user=LoginDto(avatar=user.avatar, is_admin=user.is_admin, username=user.username,
                                    menus=menus,
-                                   roles=roles,
+                                   roles=role_key,
                                    permissions=scopes))
 
 

@@ -7,8 +7,9 @@ from typing import List
 
 import jsonpickle
 from aioredis import Redis
-from fastapi.security import OAuth2PasswordBearer
-from jose import jwt
+from fastapi import Depends
+from fastapi.security import OAuth2PasswordBearer, SecurityScopes
+from jose import jwt, ExpiredSignatureError, JWTError
 from passlib.context import CryptContext
 from sqlalchemy.orm import Session
 
@@ -19,10 +20,11 @@ from database.redis import get_redis
 from exception.custom import *
 from models import User, User_Role, Role, Role_Menu, Menu
 from schemas.menu import MenuDto
+from schemas.token import TokenData
 
 pwd_context = CryptContext(schemes=['bcrypt'], deprecated='auto')
 
-oAuth2 = OAuth2PasswordBearer('/api/v1/login')
+oAuth2 = OAuth2PasswordBearer('/v1/login')
 
 
 def verify_password(plain_password: str, hashed_password: str):
@@ -96,7 +98,8 @@ async def logout_redis():
     :return:
     """
     redis: Redis = await get_redis()
-    await redis.delete('token')
+    await redis.delete('authorization')
+    await redis.delete('scopes')
     await redis.delete('current-menu-ids')
     await redis.delete('current-role-ids')
     await redis.delete('current-menu-data')
@@ -152,3 +155,35 @@ async def captcha_check(code: str) -> bool:
         raise CaptchaException(message='验证码错误')
     await redis.delete(Const.CAPTCHA)
     return True
+
+
+async def check_permissions(security_scopes: SecurityScopes, token: str = Depends(oAuth2)):
+    """
+    权限校验
+    :param security_scopes:
+    :param token:
+    :return: 账户信息
+    """
+    redis: Redis = await  get_redis()
+    try:
+        authorization: str = await redis.get('authorization')
+        if authorization != token:
+            raise SecurityScopeException(code=401, message='凭证异常', headers={"WWW-Authenticate": 'Bearer '})
+        payload = jwt.decode(token=token, key=settings.JWT_SECRET_KEY, algorithms=[settings.JWT_ALGORITHM])
+        if not payload:
+            raise JwtVerifyException(message='无效凭证')
+        token_data = TokenData(username=payload.get('sub', None), scopes=jsonpickle.decode(await redis.get('scopes')))
+        user = get_user(token_data.username)
+        if user:
+            for scope in security_scopes.scopes:
+                if scope not in token_data.scopes:
+                    raise SecurityScopeException(code=403,
+                                                 message='权限不足，联系管理员！',
+                                                 headers={"WWW-Authenticate": 'Bearer '})
+        else:
+            raise SecurityScopeException(code=401, message='凭证异常', headers={"WWW-Authenticate": 'Bearer '})
+        return user
+    except ExpiredSignatureError:
+        raise JwtVerifyException('凭证过期')
+    except JWTError:
+        raise JwtVerifyException('凭证解析失败')
