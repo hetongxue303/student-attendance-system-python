@@ -13,7 +13,6 @@ from starlette.requests import Request
 from core import Const
 from core.logger import logger
 from core.config import settings
-from database.redis import get_redis
 from exception.custom import JwtVerifyException, CaptchaException
 from schemas.result import success_json, error_json
 

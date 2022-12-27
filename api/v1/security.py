@@ -3,64 +3,66 @@
 @Author:何同学
 """
 import typing
+from typing import List
 from datetime import timedelta
 
+import jsonpickle
 from aioredis import Redis
-from fastapi import APIRouter, Form, Request
+from fastapi import APIRouter, Form
 
 from core import Const
 from core.config import settings
-from core.security import authenticate, generate_token, captcha_check
+from core.security import authenticate, generate_token, captcha_check, logout_redis, set_current_user_info, \
+    generate_scope
 from database.redis import get_redis
+from schemas.menu import MenuDto
 from schemas.result import Success
+from schemas.role import RoleDto
 from schemas.token import Token
+from schemas.user import LoginDto
 from utils.captcha import generate_captcha
 
 router = APIRouter()
 
 
 @router.post('/login', response_model=Token, summary='登录认证')
-async def login(request: Request, username: str = Form(), password: str = Form(), code: str = Form()):
+async def login(username: str = Form(), password: str = Form(), code: str = Form()):
     """
     用户登录
-    :param request: 请求
     :param username: 用户名
     :param password: 密码
     :param code: 验证码
     :return: token
     """
-    if await captcha_check(request, code=code):
-        user = authenticate(username=username, password=password)
-        # TODO 查询权限代码
-        scopes = []
-        token = generate_token({'id': user.user_id, 'sub': user.username, 'scopes': scopes})
-        redis: Redis = await get_redis(request)
+    redis: Redis = await get_redis()
+    if await captcha_check(code=code):
+        user = await authenticate(username=username, password=password)
+        await set_current_user_info(user.user_id)
+        scopes: List[str] = await generate_scope()
+        roles: List[RoleDto] = jsonpickle.decode(await redis.get('current-role-data'))
+        menus: List[MenuDto] = jsonpickle.decode(await redis.get('current-menu-data'))
+        token: str = await generate_token({'id': user.user_id, 'sub': user.username, 'scopes': scopes})
         await redis.setex(name=Const.TOKEN, value=token, time=timedelta(milliseconds=settings.JWT_EXPIRE))
-        return Token(code=200, message='登陆成功', access_token=token, expired_time=settings.JWT_EXPIRE,
-                     user=user)
+        return Token(code=200,
+                     message='登陆成功',
+                     access_token=token,
+                     expired_time=settings.JWT_EXPIRE,
+                     user=LoginDto(avatar=user.avatar, is_admin=user.is_admin,
+                                   menus=menus,
+                                   roles=roles,
+                                   permissions=scopes))
 
 
 @router.get('/logout', response_model=Success, summary='用户注销')
-async def logout(request: Request):
-    redis: Redis = await get_redis(request)
-    await redis.delete('token')
+async def logout():
+    await logout_redis()
     return Success(message='注销成功')
 
 
 @router.get('/captchaImage', response_model=Success[typing.Any], summary='获取验证码')
-async def get_code(request: Request):
+async def get_code():
     """
     获取验证码
-    :return:
     """
-    data = await generate_captcha(request)
+    data = await generate_captcha()
     return Success(message='获取验证码成功', data=data)
-
-# @router.get('/user/me', response_model=User, summary='获取当前用户')
-# async def get_current_user(current_user: User = Security(get_current_user)):
-#     """
-#     获取当前用户
-#     :param current_user:
-#     :return:
-#     """
-#     return current_user

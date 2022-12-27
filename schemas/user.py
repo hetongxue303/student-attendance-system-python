@@ -2,9 +2,13 @@
 用户模型
 @Author:何同学
 """
+from typing import List
+
 from pydantic import BaseModel
 
 from schemas.common import Common
+from schemas.menu import MenuDto
+from schemas.role import RoleDto
 
 
 class LoginDto(Common):
@@ -14,6 +18,9 @@ class LoginDto(Common):
     avatar: str = None
     is_admin: bool
     username: str = None
+    menus: List[MenuDto] = None
+    permissions: List[str] = None
+    roles: List[RoleDto] = None
 
     class Config:
         orm_mode = True
@@ -48,6 +55,14 @@ class up_password(BaseModel):
     old_password: str = None
     new_password: str = None
     confirm_password: str = None
+
+    class Config:
+        orm_mode = True
+
+
+class CurrentUserInfo(BaseModel):
+    menu_id: List[int] = None
+    menu_data: List[MenuDto]
 
     class Config:
         orm_mode = True

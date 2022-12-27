@@ -6,6 +6,7 @@ from fastapi import FastAPI
 
 from core.logger import logger
 from core.middleware import cors_middleware, http_middleware
+from core.security import logout_redis
 from database.mysql import init_db
 from api.bsae import init_router
 from database.redis import init_redis_pool
@@ -31,6 +32,7 @@ def events_listen(app: FastAPI):
         init_exception(app)  # 开启全局异常捕获
         init_router(app)  # 注册路由
         await init_redis_pool(app)  # 初始化redis
+        await logout_redis()  # 初始化redis数据
         logger.success('启动成功！！！')
         logger.success('访问文档: http://127.0.0.1:8000/docs')
 
