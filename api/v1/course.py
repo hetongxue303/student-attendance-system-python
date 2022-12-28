@@ -5,8 +5,9 @@
 import typing
 from typing import List
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Security
 
+from core.security import check_permissions
 from crud.course import query_course_list_all, query_course_list_page, insert_course, delete_course_by_id, \
     update_course_by_id
 from schemas.common import Page
@@ -22,9 +23,10 @@ async def select_all():
     return Success(data=courses, message='查询成功')
 
 
-@router.get('/getPage', response_model=Success[Page[List[CourseDto]]], summary='查询课程(Page)')
+@router.get('/getPage', response_model=Success[Page[List[CourseDto]]], summary='查询课程(Page)',
+            dependencies=[Security(check_permissions, scopes=['course:list'])])
 async def select_page(currentPage: int, pageSize: int, course_name: str = None):
-    courses = query_course_list_page(current_page=currentPage, page_size=pageSize, course_name=course_name)
+    courses = await query_course_list_page(current_page=currentPage, page_size=pageSize, course_name=course_name)
     return Success(data=courses, message='查询成功')
 
 
