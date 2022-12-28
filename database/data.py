@@ -72,10 +72,10 @@ user_role_data = [
 ]
 
 course_data = [
-    {'teacher_id': 2, 'course_name': '物联网工程', 'count': 45, 'choice': 0, 'time': 4},
-    {'teacher_id': 2, 'course_name': 'JAVA实践', 'count': 55, 'choice': 0, 'time': 16},
-    {'teacher_id': 2, 'course_name': '算法结构', 'count': 30, 'choice': 0, 'time': 8},
-    {'teacher_id': 2, 'course_name': '数据库设计', 'count': 40, 'choice': 0, 'time': 6}
+    {'teacher_id': 2, 'course_name': '物联网工程', 'count': 45, 'choice': 0, 'class_time': 4},
+    {'teacher_id': 2, 'course_name': 'JAVA实践', 'count': 55, 'choice': 0, 'class_time': 16},
+    {'teacher_id': 2, 'course_name': '算法结构', 'count': 30, 'choice': 0, 'class_time': 8},
+    {'teacher_id': 2, 'course_name': '数据库设计', 'count': 40, 'choice': 0, 'class_time': 6}
 ]
 
 menu_data = [
