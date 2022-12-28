@@ -34,3 +34,10 @@ class SecurityScopeException(Exception):
         self.message = message
         self.headers = headers
         self.code = code
+
+
+class UpdateException(Exception):
+    def __init__(self, message: str = '更新失败', code: int = 200, headers: dict = None):
+        self.message = message
+        self.headers = headers
+        self.code = code

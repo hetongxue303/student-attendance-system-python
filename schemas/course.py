@@ -13,6 +13,6 @@ class CourseDto(Common):
     course_name: str = None
     count: int = None
     choice: int = None
-    time: int = None
+    class_time: int = None
     is_delete: bool = None
     description: str = None

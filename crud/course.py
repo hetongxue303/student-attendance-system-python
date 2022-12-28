@@ -11,6 +11,7 @@ from sqlalchemy.orm import Session
 from core.security import get_user
 from database.mysql import get_db
 from database.redis import get_redis
+from exception.custom import UpdateException
 from models import User
 from models.course import Course
 from schemas.common import Page
@@ -20,7 +21,7 @@ from schemas.user import LoginDto
 db: Session = next(get_db())
 
 
-def query_course_list_all() -> Page[List[CourseDto]]:
+async def query_course_list_all() -> Page[List[CourseDto]]:
     """
     查询所有课程
     :return:
@@ -39,8 +40,8 @@ async def query_course_list_page(current_page: int, page_size: int, course_name:
     """
     redis: Redis = await get_redis()
     role_keys: List[str] = jsonpickle.decode(await redis.get('current-role-keys'))
-    # 管理员：可查询所有课程
-    if 'admin' in role_keys:
+    # 管理员/学生：可查询所有课程
+    if 'admin' in role_keys or 'student' in role_keys:
         if course_name:
             return Page(total=db.query(Course).filter(Course.is_delete == '0',
                                                       Course.course_name.like('%{0}%'.format(course_name))).count(),
@@ -65,19 +66,31 @@ async def query_course_list_page(current_page: int, page_size: int, course_name:
                         page_size).offset((current_page - 1) * page_size).all())
 
 
-def insert_course(course: CourseDto):
+async def insert_course(course: CourseDto):
     """
     新增课程
     :param course: 课程信息
     """
-    db.add(Course(course_name=course.course_name,
-                  teacher_id=course.teacher_id,
-                  count=course.count,
-                  description=course.description))
-    db.commit()
+    redis: Redis = await get_redis()
+    role_keys: List[str] = jsonpickle.decode(await redis.get('current-role-keys'))
+    # 管理员：指定教师添加课程
+    if 'admin' in role_keys:
+        db.add(Course(course_name=course.course_name, teacher_id=course.teacher_id,
+                      count=course.count, class_time=course.class_time, description=course.description))
+        db.commit()
+        return
+
+    # 教师：根据自己的ID新增课程
+    login_info: LoginDto = jsonpickle.decode(await redis.get('current-user'))
+    user: User = await get_user(login_info.username)
+    if 'teacher' in role_keys:
+        db.add(Course(course_name=course.course_name, teacher_id=user.user_id,
+                      count=course.count, class_time=course.class_time, description=course.description))
+        db.commit()
+        return
 
 
-def delete_course_by_id(id: int):
+async def delete_course_by_id(id: int):
     """
     通过课程ID逻辑删除课程信息
     :param id: 课程ID
@@ -88,7 +101,7 @@ def delete_course_by_id(id: int):
     db.commit()
 
 
-def update_course_by_id(data: CourseDto):
+async def update_course_by_id(data: CourseDto):
     """
     通过课程ID修改信息
     :param data: 课程信息
@@ -98,5 +111,37 @@ def update_course_by_id(data: CourseDto):
     item.course_name = data.course_name
     item.count = data.count
     item.choice = data.choice
+    item.class_time = data.class_time
+    item.teacher_id = data.teacher_id
     item.description = data.description
     db.commit()
+
+
+async def update_course_choice(course_id: int):
+    """
+    学生选课
+    :param course_id: 课程ID
+    """
+    redis: Redis = await get_redis()
+    role_keys: List[str] = jsonpickle.decode(await redis.get('current-role-keys'))
+    item: Course = db.query(Course).filter(Course.course_id == course_id).first()
+    if 'student' in role_keys and item and item.is_delete == '0' and item.count != item.choice:
+        item.choice += 1
+        db.commit()
+    else:
+        raise UpdateException(message='选课失败')
+
+
+async def update_course_quit(course_id: int):
+    """
+    学生退选
+    :param course_id: 课程ID
+    """
+    redis: Redis = await get_redis()
+    role_keys: List[str] = jsonpickle.decode(await redis.get('current-role-keys'))
+    item: Course = db.query(Course).filter(Course.course_id == course_id).first()
+    if 'student' in role_keys and item and item.is_delete == '0' and item.choice != 0:
+        item.choice -= 1
+        db.commit()
+    else:
+        raise UpdateException(message='退选失败', code=400)

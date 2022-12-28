@@ -42,3 +42,8 @@ def init_exception(app: FastAPI):
     async def http_exception(request: Request, e: CaptchaException):
         logger.warning(e.message)
         return success_json(code=status.HTTP_400_BAD_REQUEST, message=e.message)
+
+    @app.exception_handler(UpdateException)
+    async def http_exception(request: Request, e: UpdateException):
+        logger.warning(e.message)
+        return success_json(code=e.code, message=e.message)
