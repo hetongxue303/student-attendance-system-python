@@ -1,4 +1,5 @@
 import typing
+from typing import List
 from datetime import datetime
 
 from pydantic import BaseModel
@@ -18,3 +19,10 @@ class Common(BaseModel):
 class Page(GenericModel, typing.Generic[ModelType]):
     total: int
     record: typing.Optional[ModelType] | None = None
+
+
+class BatchDto(BaseModel):
+    data: List[int] = None
+
+    class Config:
+        orm_mode = True

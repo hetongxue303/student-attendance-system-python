@@ -17,19 +17,19 @@ from schemas.result import Success
 router = APIRouter()
 
 
-@router.get('/getAll', response_model=Success[Page[List[CourseDto]]], summary='查询课程(All)')
+@router.get('/get/all', response_model=Success[Page[List[CourseDto]]], summary='查询课程(All)')
 async def select_all():
     courses = await query_course_list_all()
     return Success(data=courses, message='查询成功')
 
 
-@router.get('/student/getPage', response_model=Success[Page[List[CourseDto]]], summary='查询学生课程(All)')
+@router.get('/student/get/page', response_model=Success[Page[List[CourseDto]]], summary='查询学生课程(All)')
 async def select_student_all(currentPage: int, pageSize: int):
     courses = await query_course_student_list_all(current_page=currentPage, page_size=pageSize)
     return Success(data=courses, message='查询成功')
 
 
-@router.get('/getPage', response_model=Success[Page[List[CourseDto]]], summary='查询课程(Page)',
+@router.get('/get/page', response_model=Success[Page[List[CourseDto]]], summary='查询课程(Page)',
             dependencies=[Security(check_permissions, scopes=['course:list'])])
 async def select_page(currentPage: int, pageSize: int, course_name: str = None):
     courses = await query_course_list_page(current_page=currentPage, page_size=pageSize, course_name=course_name)

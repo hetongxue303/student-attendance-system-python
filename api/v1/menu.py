@@ -9,13 +9,13 @@ from fastapi import APIRouter, Body
 router = APIRouter()
 
 
-@router.get('/getAll', summary='查询菜单(All)')
+@router.get('/get/all', summary='查询菜单(All)')
 async def select_all():
     print('进方法')
     pass
 
 
-@router.get('/getPage', summary='查询菜单(Page)')
+@router.get('/get/page', summary='查询菜单(Page)')
 async def select_page(data=Body(None)):
     pass
 

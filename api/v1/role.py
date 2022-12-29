@@ -2,17 +2,27 @@
 角色相关
 @Author:何同学
 """
-from fastapi import APIRouter, Body
+from typing import List
+
+from fastapi import APIRouter, Body, Security
+
+from core.security import check_permissions
+from crud.role import query_role_list_all
+from schemas.common import Page
+from schemas.result import Success
+from schemas.role import RoleDto
 
 router = APIRouter()
 
 
-@router.get('/getAll', summary='查询角色(All)')
+@router.get('/get/all', response_model=Success[Page[List[RoleDto]]], summary='查询角色(All)',
+            dependencies=[Security(check_permissions)])
 async def select_all():
-    pass
+    roles = query_role_list_all()
+    return Success(data=roles, message='查询成功')
 
 
-@router.get('/getPage', summary='查询角色(Page)')
+@router.get('/get/page', summary='查询角色(Page)')
 async def select_page(data=Body(None)):
     pass
 

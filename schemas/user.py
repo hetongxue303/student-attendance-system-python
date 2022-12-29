@@ -15,7 +15,7 @@ class LoginDto(BaseModel):
     用户登录模型
     """
     avatar: str = None
-    is_admin: bool
+    is_admin: bool = None
     username: str = None
     menus: List[MenuDto] = None
     permissions: List[str] = None
@@ -26,17 +26,18 @@ class LoginDto(BaseModel):
 
 
 class UserDtoOut(Common):
-    user_id: int
+    user_id: int = None
     username: str = None
+    nick_name: str = None
     real_name: str = None
     avatar: str = None
-    gender: int
+    gender: int = None
     email: str = None
     phone: str = None
-    role: int
-    is_admin: bool
-    is_enable: bool
-    is_delete: bool
+    role: int = None
+    is_admin: bool = None
+    is_enable: bool = None
+    is_delete: bool = None
     description: str = None
 
 

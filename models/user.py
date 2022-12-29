@@ -18,6 +18,8 @@ class User(Base):
 
     password = Column(String(100), nullable=False, comment='密码')
 
+    nick_name = Column(String(30), comment='昵称')
+
     real_name = Column(String(30), comment='真实姓名')
 
     avatar = Column(String(255), comment='头像地址')

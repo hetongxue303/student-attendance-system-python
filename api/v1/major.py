@@ -16,14 +16,14 @@ from schemas.result import Success
 router = APIRouter()
 
 
-@router.get('/getAll', response_model=Success[Page[List[MajorDto]]], summary='查询专业(All)',
+@router.get('/get/all', response_model=Success[Page[List[MajorDto]]], summary='查询专业(All)',
             dependencies=[Security(check_permissions, scopes=['major:list'])])
 async def select_all():
     majors = query_major_list_all()
     return Success(data=majors, message='查询成功')
 
 
-@router.get('/getPage', response_model=Success[Page[List[MajorDto]]], summary='查询专业(Page)',
+@router.get('/get/page', response_model=Success[Page[List[MajorDto]]], summary='查询专业(Page)',
             dependencies=[Security(check_permissions, scopes=['major:list'])])
 async def select_page(currentPage: int, pageSize: int, major_name: str = None):
     majors = query_major_list_page(current_page=currentPage, page_size=pageSize, major_name=major_name)

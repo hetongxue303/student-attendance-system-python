@@ -56,7 +56,7 @@ async def logout():
     return Success(message='注销成功')
 
 
-@router.get('/captchaImage', response_model=Success[typing.Any], summary='获取验证码')
+@router.get('/captcha-image', response_model=Success[typing.Any], summary='获取验证码')
 async def get_code():
     """
     获取验证码
