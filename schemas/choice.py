@@ -3,6 +3,9 @@
 @Author:何同学
 """
 import decimal
+from typing import List
+
+from pydantic import BaseModel
 
 from schemas.common import Common
 from schemas.course import CourseDto
@@ -20,3 +23,8 @@ class ChoiceDto(Common):
     is_delete: bool = None
     status: int = None
     description: str = None
+
+
+class UpdateBatchChoiceDto(BaseModel):
+    operate: bool = None
+    choice_ids: List[int] = None

@@ -42,12 +42,12 @@ def query_major_list_page(current_page: int, page_size: int, major_name: str):
                     (current_page - 1) * page_size).all())
 
 
-def insert_major(major: MajorDto):
+def insert_major(data: MajorDto):
     """
     新增专业
-    :param major: 专业信息
+    :param data: 专业信息
     """
-    db.add(Major(major_name=major.major_name, description=major.description))
+    db.add(Major(major_name=data.major_name, description=data.description))
     db.commit()
 
 

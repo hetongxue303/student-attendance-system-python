@@ -36,8 +36,8 @@ user_data = [
     {
         'username': 'teacher',
         'password': '$2b$12$q0OSa5wwpo1xkUfRCx2DZuPqWt04CQ.CNR.lV6oGqnpVmww2055Py',
-        'real_name': '教师',
-        'gender': '1',
+        'real_name': '王大唛',
+        'gender': '2',
         'email': 'yhe.cq@qq.com',
         'phone': '15658594785',
         'avatar': 'https://profile.csdnimg.cn/6/A/B/0_qq_14818715',
@@ -48,7 +48,7 @@ user_data = [
     {
         'username': 'student',
         'password': '$2b$12$q0OSa5wwpo1xkUfRCx2DZuPqWt04CQ.CNR.lV6oGqnpVmww2055Py',
-        'real_name': '学生',
+        'real_name': '周武瞬',
         'gender': '1',
         'email': 'yhe.cq@qq.com',
         'phone': '15658594785',
@@ -286,6 +286,58 @@ menu_data = [
         'parent_id': 11,
         'sort': 16,
         'per_key': 'course:quit'
+    },
+    {
+        'menu_name': 'choice',
+        'path': '/educational/choice',
+        'component': '/educational/choice/index.vue',
+        'redirect': '',
+        'icon': 'choice',
+        'is_sub': '0',
+        'menu_title': '选课记录',
+        'menu_type': '2',
+        'parent_id': 10,
+        'sort': 17,
+        'per_key': 'choice:list'
+    },
+    {
+        'menu_name': '',
+        'path': '',
+        'component': '',
+        'redirect': '',
+        'icon': '',
+        'is_sub': '0',
+        'menu_title': '查看记录',
+        'menu_type': '3',
+        'parent_id': 17,
+        'sort': 18,
+        'per_key': 'choice:look',
+    },
+    {
+        'menu_name': '',
+        'path': '',
+        'component': '',
+        'redirect': '',
+        'icon': '',
+        'is_sub': '0',
+        'menu_title': '删除记录',
+        'menu_type': '3',
+        'parent_id': 17,
+        'sort': 19,
+        'per_key': 'choice:delete'
+    },
+    {
+        'menu_name': '',
+        'path': '',
+        'component': '',
+        'redirect': '',
+        'icon': '',
+        'is_sub': '0',
+        'menu_title': '选课操作',
+        'menu_type': '3',
+        'parent_id': 17,
+        'sort': 20,
+        'per_key': 'course:operate'
     }
 ]
 
@@ -306,6 +358,10 @@ role_menu_data = [
     {'role_id': 1, 'menu_id': 14},
     {'role_id': 1, 'menu_id': 15},
     {'role_id': 1, 'menu_id': 16},
+    {'role_id': 1, 'menu_id': 17},
+    {'role_id': 1, 'menu_id': 18},
+    {'role_id': 1, 'menu_id': 19},
+    {'role_id': 1, 'menu_id': 20},
 
     {'role_id': 2, 'menu_id': 1},
     {'role_id': 2, 'menu_id': 2},

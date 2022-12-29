@@ -9,11 +9,13 @@ from aioredis import Redis
 from sqlalchemy.orm import Session
 
 from core.security import get_user
+from crud.choice import insert_choice, update_choice_quit
 from database.mysql import get_db
 from database.redis import get_redis
 from exception.custom import UpdateException
 from models import User, Choice
 from models.course import Course
+from schemas.choice import ChoiceDto
 from schemas.common import Page
 from schemas.course import CourseDto
 from schemas.user import LoginDto
@@ -129,7 +131,7 @@ async def update_course_choice(course_id: int):
         login_info: LoginDto = jsonpickle.decode(await redis.get('current-user'))
         user: User = await get_user(login_info.username)
         item.choice += 1
-        db.add(Choice(user_id=user.user_id, course_id=item.course_id))
+        insert_choice(ChoiceDto(user_id=user.user_id, course_id=item.course_id))
         db.commit()
     else:
         raise UpdateException(message='选课失败')
@@ -146,9 +148,7 @@ async def update_course_quit(course_id: int):
     if 'student' in role_keys and item and item.is_delete == '0' and item.choice != 0:
         login_info: LoginDto = jsonpickle.decode(await redis.get('current-user'))
         user: User = await get_user(login_info.username)
-        choice: Choice = db.query(Choice).filter(Choice.course_id == course_id, Choice.user_id == user.user_id).first()
-        if choice:
-            choice.is_quit = '1'
+        update_choice_quit(user.user_id, item.course_id)
         item.choice -= 1
         db.commit()
     else:

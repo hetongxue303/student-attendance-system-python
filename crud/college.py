@@ -42,12 +42,12 @@ def query_college_list_page(current_page: int, page_size: int, college_name: str
                     (current_page - 1) * page_size).all())
 
 
-def insert_college(college: CollegeDto):
+def insert_college(data: CollegeDto):
     """
     新增学院
-    :param college: 学院信息
+    :param data: 学院信息
     """
-    db.add(College(college_name=college.college_name, description=college.description))
+    db.add(College(college_name=data.college_name, description=data.description))
     db.commit()
 
 
