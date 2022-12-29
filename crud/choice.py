@@ -15,7 +15,6 @@ from exception.custom import UpdateException
 from models import Choice, Course, User
 from schemas.choice import ChoiceDto, UpdateBatchChoiceDto
 from schemas.common import Page
-from schemas.user import LoginDto
 
 db: Session = next(get_db())
 

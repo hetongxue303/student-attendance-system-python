@@ -18,7 +18,7 @@ class ChoiceDto(Common):
     user: UserDtoOut = None
     course_id: int = None
     course: CourseDto = None
-    score: decimal.Decimal = None
+    score: float | decimal.Decimal = None
     is_quit: bool = None
     is_delete: bool = None
     status: int = None
@@ -28,3 +28,6 @@ class ChoiceDto(Common):
 class UpdateBatchChoiceDto(BaseModel):
     operate: bool = None
     choice_ids: List[int] = None
+
+    class Config:
+        orm_mode = True
