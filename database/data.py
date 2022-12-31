@@ -35,10 +35,36 @@ user_data = [
         'is_enable': '1'
     },
     {
-        'username': 'teacher',
+        'username': 'teacher1',
         'password': '$2b$12$q0OSa5wwpo1xkUfRCx2DZuPqWt04CQ.CNR.lV6oGqnpVmww2055Py',
         'real_name': '王大唛',
-        'nick_name': '教师啦',
+        'nick_name': '王老师',
+        'gender': '2',
+        'email': 'yhe.cq@qq.com',
+        'phone': '15658594785',
+        'avatar': 'https://profile.csdnimg.cn/6/A/B/0_qq_14818715',
+        'role': '1',
+        'is_admin': '0',
+        'is_enable': '1'
+    },
+    {
+        'username': 'student1',
+        'password': '$2b$12$q0OSa5wwpo1xkUfRCx2DZuPqWt04CQ.CNR.lV6oGqnpVmww2055Py',
+        'real_name': '周武瞬',
+        'nick_name': '周学生',
+        'gender': '1',
+        'email': 'yhe.cq@qq.com',
+        'phone': '15658594785',
+        'avatar': 'https://profile.csdnimg.cn/6/A/B/0_qq_14818715',
+        'role': '3',
+        'is_admin': '0',
+        'is_enable': '1'
+    },
+    {
+        'username': 'teacher2',
+        'password': '$2b$12$q0OSa5wwpo1xkUfRCx2DZuPqWt04CQ.CNR.lV6oGqnpVmww2055Py',
+        'real_name': '臧瞬馨',
+        'nick_name': '臧老师',
         'gender': '2',
         'email': 'yhe.cq@qq.com',
         'phone': '15658594785',
@@ -48,11 +74,11 @@ user_data = [
         'is_enable': '1'
     },
     {
-        'username': 'student',
+        'username': 'student2',
         'password': '$2b$12$q0OSa5wwpo1xkUfRCx2DZuPqWt04CQ.CNR.lV6oGqnpVmww2055Py',
-        'real_name': '周武瞬',
-        'nick_name': '学生啦',
-        'gender': '1',
+        'real_name': '张鑫敏',
+        'nick_name': '张学生',
+        'gender': '2',
         'email': 'yhe.cq@qq.com',
         'phone': '15658594785',
         'avatar': 'https://profile.csdnimg.cn/6/A/B/0_qq_14818715',
@@ -71,14 +97,19 @@ role_data = [
 user_role_data = [
     {'user_id': 1, 'role_id': 1},
     {'user_id': 2, 'role_id': 2},
-    {'user_id': 3, 'role_id': 3}
+    {'user_id': 3, 'role_id': 3},
+    {'user_id': 4, 'role_id': 2},
+    {'user_id': 5, 'role_id': 3}
 ]
 
 course_data = [
     {'teacher_id': 2, 'course_name': '物联网工程', 'count': 45, 'choice': 0, 'class_time': 4},
     {'teacher_id': 2, 'course_name': 'JAVA实践', 'count': 55, 'choice': 0, 'class_time': 16},
     {'teacher_id': 2, 'course_name': '算法结构', 'count': 30, 'choice': 0, 'class_time': 8},
-    {'teacher_id': 2, 'course_name': '数据库设计', 'count': 40, 'choice': 0, 'class_time': 6}
+    {'teacher_id': 2, 'course_name': '数据库设计', 'count': 40, 'choice': 0, 'class_time': 6},
+    {'teacher_id': 4, 'course_name': '美术设计', 'count': 20, 'choice': 0, 'class_time': 12},
+    {'teacher_id': 4, 'course_name': '美术基础', 'count': 50, 'choice': 0, 'class_time': 16},
+    {'teacher_id': 4, 'course_name': '素描理论', 'count': 30, 'choice': 0, 'class_time': 4}
 ]
 
 menu_data = [
