@@ -23,7 +23,7 @@ engine = create_engine(
 # 操作数据库会话
 localSession = sessionmaker(
     bind=engine,
-    autoflush=False,
+    autoflush=True,
     autocommit=False,
     expire_on_commit=False  # 防止提交后属性过期
 )

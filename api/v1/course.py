@@ -9,7 +9,8 @@ from fastapi import APIRouter, Security
 
 from core.security import check_permissions
 from crud.course import query_course_list_all, query_course_list_page, insert_course, delete_course_by_id, \
-    update_course_by_id, update_course_choice, update_course_quit, query_course_student_list_all
+    update_course_by_id, update_course_choice, update_course_quit, query_course_student_list_all, \
+    query_course_teacher_list_all
 from schemas.common import Page
 from schemas.course import CourseDto
 from schemas.result import Success
@@ -17,19 +18,25 @@ from schemas.result import Success
 router = APIRouter()
 
 
-@router.get('/get/all', response_model=Success[Page[List[CourseDto]]], summary='查询课程(All)')
+@router.get('/get/all', response_model=Success[Page[list[CourseDto]]], summary='查询课程(All)')
 async def select_all():
     courses = await query_course_list_all()
     return Success(data=courses, message='查询成功')
 
 
-@router.get('/student/get/page', response_model=Success[Page[List[CourseDto]]], summary='查询学生课程(All)')
-async def select_student_all(currentPage: int, pageSize: int):
+@router.get('/teacher/get/all', response_model=Success[list[CourseDto]], summary='查询教师课程(All)')
+async def select_student_all():
+    courses = await query_course_teacher_list_all()
+    return Success(data=courses, message='查询成功')
+
+
+@router.get('/student/get/page', response_model=Success[Page[list[CourseDto]]], summary='查询学生课程(Page)')
+async def select_student_page(currentPage: int, pageSize: int):
     courses = await query_course_student_list_all(current_page=currentPage, page_size=pageSize)
     return Success(data=courses, message='查询成功')
 
 
-@router.get('/get/page', response_model=Success[Page[List[CourseDto]]], summary='查询课程(Page)',
+@router.get('/get/page', response_model=Success[Page[list[CourseDto]]], summary='查询课程(Page)',
             dependencies=[Security(check_permissions, scopes=['course:list'])])
 async def select_page(currentPage: int, pageSize: int, course_name: str = None):
     courses = await query_course_list_page(current_page=currentPage, page_size=pageSize, course_name=course_name)

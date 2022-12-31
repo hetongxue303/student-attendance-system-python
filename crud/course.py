@@ -32,6 +32,19 @@ async def query_course_list_all() -> Page[List[CourseDto]]:
                 record=db.query(Course).filter(Course.is_delete == '0').all())
 
 
+async def query_course_teacher_list_all() -> List[Course]:
+    """
+    查询教师的所有课程
+    :return: List[CourseDto]
+    """
+    redis: Redis = await get_redis()
+    role_keys: List[str] = jsonpickle.decode(await redis.get('current-role-keys'))
+    login_info: LoginDto = jsonpickle.decode(await redis.get('current-user'))
+    user: User = await get_user(login_info.username)
+    if 'teacher' in role_keys:
+        return db.query(Course).filter(Course.teacher_id == user.user_id).all()
+
+
 async def query_course_student_list_all(current_page: int, page_size: int) -> Page[List[CourseDto]]:
     redis: Redis = await get_redis()
     role_keys: List[str] = jsonpickle.decode(await redis.get('current-role-keys'))

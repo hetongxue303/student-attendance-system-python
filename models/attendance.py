@@ -2,7 +2,7 @@
 考勤表
 @Author:何同学
 """
-from sqlalchemy import Column, BigInteger, ForeignKey, DateTime, Integer
+from sqlalchemy import Column, BigInteger, ForeignKey, DateTime, Integer, Enum
 from sqlalchemy.orm import relationship
 
 from models.base import Base
@@ -15,10 +15,10 @@ class Attendance(Base):
     attendance_id = Column(BigInteger, primary_key=True, autoincrement=True, comment='考勤ID')
 
     user_id = Column(BigInteger, ForeignKey('user.user_id'), nullable=False, comment='发布人ID')
-    user = relationship('User', backref='attendance')
+    user = relationship('User', backref='attendance1')
 
     course_id = Column(BigInteger, ForeignKey('course.course_id'), nullable=False, comment='课程ID')
-    course = relationship('Course', backref='attendance')
+    course = relationship('Course', backref='attendance2')
 
     release_time = Column(DateTime(timezone=True), nullable=False, comment='发布时间')
 
@@ -27,3 +27,5 @@ class Attendance(Base):
     course_count = Column(Integer, nullable=False, server_default='0', comment='课程人数')
 
     attendance_count = Column(Integer, nullable=False, server_default='0', comment='签到人数')
+
+    is_end = Column(Enum('0', '1'), nullable=False, server_default='0', comment='是否结束(0:否 1:是)')

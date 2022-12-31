@@ -14,10 +14,10 @@ class Choice(Base):
 
     choice_id = Column(BigInteger, primary_key=True, autoincrement=True, comment='选课ID')
 
-    user_id = Column(BigInteger, ForeignKey('user.user_id'), comment='用户ID')
-    user = relationship('User', backref='choice')
+    user_id = Column(BigInteger, ForeignKey('user.user_id'), nullable=False, comment='用户ID')
+    user = relationship('User', backref='choice1')
 
-    course_id = Column(BigInteger, ForeignKey('course.course_id'), comment='课程ID')
+    course_id = Column(BigInteger, ForeignKey('course.course_id'), nullable=False, comment='课程ID')
     course = relationship('Course', backref='choice2')
 
     score = Column(DECIMAL(3, 2), server_default='0', comment='课程成绩')
