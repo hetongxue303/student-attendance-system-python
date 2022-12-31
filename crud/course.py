@@ -39,7 +39,7 @@ async def query_course_student_list_all(current_page: int, page_size: int) -> Pa
     user: User = await get_user(login_info.username)
     if 'student' in role_keys:
         choices = db.query(Choice).filter(Choice.user_id == user.user_id, Choice.status == '1',
-                                          Choice.is_quit != '1').all()
+                                          Choice.is_quit == '0').all()
         course_ids: List[int] = []
         if choices:
             for v in choices:

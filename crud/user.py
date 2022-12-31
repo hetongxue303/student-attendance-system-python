@@ -8,10 +8,10 @@ import jsonpickle
 from aioredis import Redis
 from sqlalchemy.orm import Session
 
-from core.security import get_password_hash
+from core.security import get_password_hash, get_user
 from database.mysql import get_db
 from database.redis import get_redis
-from models import User
+from models import User, User_Role
 from schemas.common import Page
 from schemas.user import UserDtoOut, UserDto
 
@@ -28,8 +28,11 @@ async def insert_user(data: UserDto):
     if 'admin' in role_keys:
         db.add(User(username=data.username, password=get_password_hash(data.password),
                     is_admin='1' if data.role == 1 else '0', is_enable='1' if data.is_enable else '0',
-                    gender=data.gender.__str__(), nick_name=data.nick_name, email=data.email,
-                    phone=data.phone, role=data.role.__str__(), description=data.description))
+                    gender=data.gender.__str__(), nick_name=data.nick_name, email=data.email, phone=data.phone,
+                    real_name=data.real_name, role=data.role.__str__(), description=data.description))
+        db.commit()
+        user: User = db.query(User).filter(User.username == data.username).first()
+        db.add(User_Role(user_id=user.user_id, role_id=data.role))
         db.commit()
 
 
@@ -70,6 +73,7 @@ def delete_user_by_id(user_id: int):
     """
     item: User = db.query(User).filter(User.user_id == user_id).first()
     item.is_delete = '1'
+    db.query(User_Role).filter(User_Role.user_id == user_id).delete()
     db.commit()
 
 
@@ -81,6 +85,7 @@ def delete_user_by_ids(user_ids: List[int]):
     for id in user_ids:
         item: User = db.query(User).filter(User.user_id == id).first()
         item.is_delete = '1'
+        db.query(User_Role).filter(User_Role.user_id == id).delete()
         db.commit()
 
 
@@ -93,7 +98,7 @@ async def update_user_by_id(data: UserDto):
     item.is_delete = '1' if data.is_delete else '0'
     item.is_enable = '1' if data.is_enable else '0'
     item.is_admin = '1' if data.is_admin else '0'
-    item.password = item.password if data.password is None else data.password
+    item.password = item.password if data.password is None else get_password_hash(data.password)
     item.role = data.role.__str__()
     item.real_name = data.real_name
     item.username = data.username

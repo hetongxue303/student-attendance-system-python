@@ -9,7 +9,7 @@ from models.base import Base
 
 
 class Choice(Base):
-    """ 学院表 """
+    """ 选课表 """
     __table_args__ = ({"comment": "选课表"})
 
     choice_id = Column(BigInteger, primary_key=True, autoincrement=True, comment='选课ID')

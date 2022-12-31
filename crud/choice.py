@@ -53,9 +53,11 @@ async def query_choice_list_page(current_page: int, page_size: int, status: int,
         course_ids: List[int] = []
         for v in courses:
             course_ids.append(v.course_id)
-        return Page(total=db.query(Choice).filter(Choice.is_delete == '0', Choice.course_id.in_(course_ids)).count(),
-                    record=db.query(Choice).filter(Choice.is_delete == '0', Choice.course_id.in_(course_ids)).limit(
-                        page_size).offset((current_page - 1) * page_size).all())
+        return Page(total=db.query(Choice).filter(Choice.is_delete == '0', Choice.is_quit == '0',
+                                                  Choice.course_id.in_(course_ids)).count(),
+                    record=db.query(Choice).filter(Choice.is_delete == '0', Choice.is_quit == '0',
+                                                   Choice.course_id.in_(course_ids)).limit(page_size).offset(
+                        (current_page - 1) * page_size).all())
 
 
 def insert_choice(data: ChoiceDto):

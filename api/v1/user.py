@@ -39,7 +39,6 @@ async def select_page(currentPage: int, pageSize: int):
 @router.post('/insert', response_model=Success[typing.Any], summary='新增用户',
              dependencies=[Security(check_permissions)])
 async def insert_one(data: UserDto):
-    print(data)
     await insert_user(data)
     return Success(message='增加成功')
 
