@@ -3,7 +3,6 @@
 @Author:何同学
 """
 import decimal
-from typing import List
 
 from pydantic import BaseModel
 
@@ -27,7 +26,7 @@ class ChoiceDto(Common):
 
 class UpdateBatchChoiceDto(BaseModel):
     operate: bool = None
-    choice_ids: List[int] = None
+    choice_ids: list[int] = None
 
     class Config:
         orm_mode = True

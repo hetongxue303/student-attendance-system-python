@@ -1,5 +1,4 @@
 import typing
-from typing import List
 from datetime import datetime
 
 from pydantic import BaseModel
@@ -14,6 +13,7 @@ class Common(BaseModel):
 
     class Config:
         orm_mode = True
+        arbitrary_types_allowed = True
 
 
 class Page(GenericModel, typing.Generic[ModelType]):
@@ -22,7 +22,8 @@ class Page(GenericModel, typing.Generic[ModelType]):
 
 
 class BatchDto(BaseModel):
-    data: List[int] = None
+    data: list[int] = None
 
     class Config:
         orm_mode = True
+        arbitrary_types_allowed = True

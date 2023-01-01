@@ -2,6 +2,9 @@
 测试
 @Author:何同学
 """
+import time
+from datetime import datetime
+
 from sqlalchemy.orm import Session
 
 from database.mysql import get_db
@@ -45,4 +48,6 @@ def test(db: Session = next(get_db())):
 
 
 if __name__ == '__main__':
-    test()
+    # test()
+    print(time.time())
+    print(datetime.now().timestamp())

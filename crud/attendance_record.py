@@ -24,11 +24,12 @@ async def insert_attendance_record(data: AttendanceRecordDto):
     """
     redis: Redis = await get_redis()
     user: User = await get_user(jsonpickle.decode(await redis.get('current-user')).username)
-    db.add(Attendance_Record(Attendance_Record.user_id == user.user_id,
-                             Attendance_Record.attendance_id == data.attendance_id,
-                             Attendance_Record.attendance_type == data.attendance_type,
-                             Attendance_Record.description == None if data.description is None else data.description))
+    db.add(Attendance_Record(user_id=user.user_id,
+                             attendance_id=data.attendance_id,
+                             attendance_type=data.attendance_type.__str__(),
+                             description=None if data.description is None else data.description))
     db.commit()
+    db.close()
 
 
 def query_attendance_record_list_all(current_page: int, page_size: int) -> Page[list[AttendanceRecordDto]]:

@@ -15,8 +15,28 @@ from exception.custom import UpdateException
 from models import Choice, Course, User
 from schemas.choice import ChoiceDto, UpdateBatchChoiceDto
 from schemas.common import Page
+from schemas.user import LoginDto
 
 db: Session = next(get_db())
+
+
+async def query_choice_student_list_all(current_page: int, page_size: int) -> Page[List[ChoiceDto]]:
+    """
+    获取学生选课记录
+    :param current_page:
+    :param page_size:
+    :return:
+    """
+    redis: Redis = await get_redis()
+    role_keys: List[str] = jsonpickle.decode(await redis.get('current-role-keys'))
+    login_info: LoginDto = jsonpickle.decode(await redis.get('current-user'))
+    user: User = await get_user(login_info.username)
+    if 'student' in role_keys:
+        return Page(total=db.query(Choice).filter(Choice.user_id == user.user_id, Choice.status == '1',
+                                                  Choice.is_quit == '0').count(),
+                    record=db.query(Choice).filter(Choice.user_id == user.user_id, Choice.status == '1',
+                                                   Choice.is_quit == '0').limit(page_size).offset(
+                        (current_page - 1) * page_size).all())
 
 
 def query_choice_list_all() -> Page[List[ChoiceDto]]:

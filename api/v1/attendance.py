@@ -10,6 +10,7 @@ from core.security import check_permissions
 from crud.attendance import insert_attendance, query_attendances_student_list_all, delete_attendance_by_id, \
     update_attendance_by_id
 from schemas.attendance import AttendanceDto
+from schemas.attendance_record import StudentAttendanceDto
 from schemas.common import Page
 from schemas.result import Success
 
@@ -35,7 +36,8 @@ async def update_one(data: AttendanceDto):
     return Success(message='修改成功')
 
 
-@router.get('/student/get/page', response_model=Success[Page[list[AttendanceDto]]], summary='获取学生考勤列表',
+@router.get('/student/get/page', response_model=Success[Page[list[StudentAttendanceDto]]],
+            summary='获取学生考勤列表',
             dependencies=[Security(check_permissions)])
 async def select_student_page(currentPage: int, pageSize: int):
     attendances = await query_attendances_student_list_all(current_page=currentPage, page_size=pageSize)

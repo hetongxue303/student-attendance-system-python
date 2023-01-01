@@ -2,6 +2,7 @@
 课程模型
 @Author:何同学
 """
+
 from schemas.common import Common
 from schemas.user import UserDtoOut
 

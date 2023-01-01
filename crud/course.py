@@ -45,23 +45,6 @@ async def query_course_teacher_list_all() -> List[Course]:
         return db.query(Course).filter(Course.teacher_id == user.user_id).all()
 
 
-async def query_course_student_list_all(current_page: int, page_size: int) -> Page[List[CourseDto]]:
-    redis: Redis = await get_redis()
-    role_keys: List[str] = jsonpickle.decode(await redis.get('current-role-keys'))
-    login_info: LoginDto = jsonpickle.decode(await redis.get('current-user'))
-    user: User = await get_user(login_info.username)
-    if 'student' in role_keys:
-        choices = db.query(Choice).filter(Choice.user_id == user.user_id, Choice.status == '1',
-                                          Choice.is_quit == '0').all()
-        course_ids: List[int] = []
-        if choices:
-            for v in choices:
-                course_ids.append(v.course_id)
-        return Page(total=db.query(Course).filter(Course.course_id.in_(course_ids)).count(),
-                    record=db.query(Course).filter(Course.course_id.in_(course_ids)).limit(page_size).offset(
-                        (current_page - 1) * page_size).all())
-
-
 async def query_course_list_page(current_page: int, page_size: int, course_name: str) -> Page[List[CourseDto]]:
     """
     分页查询课程列表

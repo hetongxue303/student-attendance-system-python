@@ -3,13 +3,12 @@
 @Author:何同学
 """
 import typing
-from typing import List
 
 from fastapi import APIRouter, Security
 
 from core.security import check_permissions
 from crud.choice import insert_choice, delete_choice_by_id, update_choice_by_id, query_choice_list_all, \
-    query_choice_list_page, update_choice_batch_by_id
+    query_choice_list_page, update_choice_batch_by_id, query_choice_student_list_all
 from schemas.choice import ChoiceDto, UpdateBatchChoiceDto
 from schemas.common import Page
 from schemas.result import Success
@@ -17,14 +16,20 @@ from schemas.result import Success
 router = APIRouter()
 
 
-@router.get('/get/all', response_model=Success[Page[List[ChoiceDto]]], summary='查询选课记录(All)',
+@router.get('/student/get/page', response_model=Success[Page[list[ChoiceDto]]], summary='查询学生选课记录(Page)')
+async def select_student_page(currentPage: int, pageSize: int):
+    choices = await query_choice_student_list_all(current_page=currentPage, page_size=pageSize)
+    return Success(data=choices, message='查询成功')
+
+
+@router.get('/get/all', response_model=Success[Page[list[ChoiceDto]]], summary='查询选课记录(All)',
             dependencies=[Security(check_permissions)])
 async def select_all():
     choices = query_choice_list_all()
     return Success(data=choices, message='查询成功')
 
 
-@router.get('/get/page', response_model=Success[Page[List[ChoiceDto]]], summary='查询选课记录(Page)',
+@router.get('/get/page', response_model=Success[Page[list[ChoiceDto]]], summary='查询选课记录(Page)',
             dependencies=[Security(check_permissions)])
 async def select_page(currentPage: int, pageSize: int, status: int = None,
                       real_name: str = None, course_name: str = None):

@@ -20,3 +20,7 @@ class AttendanceDto(Common):
     course_count: int = None
     attendance_count: int = None
     is_end: bool = None
+
+    class Config:
+        orm_mode = True
+        arbitrary_types_allowed = True
