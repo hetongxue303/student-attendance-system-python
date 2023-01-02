@@ -3,7 +3,6 @@ token模型
 @Author:何同学
 """
 from datetime import timedelta
-from typing import List
 from pydantic import BaseModel
 
 from schemas.user import LoginDto
@@ -18,11 +17,13 @@ class Token(BaseModel):
 
     class Config:
         orm_mode = True
+        arbitrary_types_allowed = True
 
 
 class TokenData(BaseModel):
     username: str | None = None
-    scopes: List[str] = []
+    scopes: list[str] = []
 
     class Config:
         orm_mode = True
+        arbitrary_types_allowed = True

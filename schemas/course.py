@@ -2,12 +2,14 @@
 课程模型
 @Author:何同学
 """
+from datetime import datetime
 
-from schemas.common import Common
+from pydantic import BaseModel
+
 from schemas.user import UserDtoOut
 
 
-class CourseDto(Common):
+class CourseDto(BaseModel):
     course_id: int = None
     teacher_id: int = None
     teacher: UserDtoOut = None
@@ -17,3 +19,9 @@ class CourseDto(Common):
     class_time: int = None
     is_delete: bool = None
     description: str = None
+    create_time: datetime = None
+    update_time: datetime = None
+
+    class Config:
+        orm_mode = True
+        arbitrary_types_allowed = True

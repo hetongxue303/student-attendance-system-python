@@ -6,7 +6,6 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from core.logger import logger
-from core.config import settings
 from database.data import user_data, college_data, major_data, role_data, user_role_data, course_data, menu_data, \
     role_menu_data
 from models import User, Base, College, Major, Role, User_Role, Menu, Role_Menu
@@ -14,18 +13,21 @@ from models.course import Course
 
 # 创建引擎
 engine = create_engine(
-    url=settings.DATABASE_URI,  # MySQL URI
-    echo=settings.DATABASE_ECHO,  # 是否打印数据库日志 (可看到创建表、表数据增删改查的信息)
+    url='mysql+pymysql://root:123456@127.0.0.1:3306/student_attendance_system?charset=utf8',
+    # 是否打印数据库日志
+    echo=False,
     pool_pre_ping=True,
-    pool_recycle=3600
-)
+    pool_recycle=3600,
+    # 设置隔离级别：READ COMMITTED | READ UNCOMMITTED | REPEATABLE READ | SERIALIZABLE | AUTOCOMMIT
+    isolation_level='READ UNCOMMITTED')
 
 # 操作数据库会话
 localSession = sessionmaker(
     bind=engine,
     autoflush=True,
     autocommit=False,
-    expire_on_commit=False  # 防止提交后属性过期
+    # 防止提交后属性过期
+    expire_on_commit=False
 )
 
 

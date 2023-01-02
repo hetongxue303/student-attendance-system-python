@@ -2,8 +2,6 @@
 课程业务
 @Author:何同学
 """
-from typing import List
-
 import jsonpickle
 from aioredis import Redis
 from sqlalchemy.orm import Session
@@ -23,7 +21,7 @@ from schemas.user import LoginDto
 db: Session = next(get_db())
 
 
-async def query_course_list_all() -> Page[List[CourseDto]]:
+async def query_course_list_all() -> Page[list[CourseDto]]:
     """
     查询所有课程
     :return:
@@ -32,20 +30,20 @@ async def query_course_list_all() -> Page[List[CourseDto]]:
                 record=db.query(Course).filter(Course.is_delete == '0').all())
 
 
-async def query_course_teacher_list_all() -> List[Course]:
+async def query_course_teacher_list_all() -> list[Course]:
     """
     查询教师的所有课程
     :return: List[CourseDto]
     """
     redis: Redis = await get_redis()
-    role_keys: List[str] = jsonpickle.decode(await redis.get('current-role-keys'))
+    role_keys: list[str] = jsonpickle.decode(await redis.get('current-role-keys'))
     login_info: LoginDto = jsonpickle.decode(await redis.get('current-user'))
     user: User = await get_user(login_info.username)
     if 'teacher' in role_keys:
         return db.query(Course).filter(Course.teacher_id == user.user_id).all()
 
 
-async def query_course_list_page(current_page: int, page_size: int, course_name: str) -> Page[List[CourseDto]]:
+async def query_course_list_page(current_page: int, page_size: int, course_name: str) -> Page[list[CourseDto]]:
     """
     分页查询课程列表
     :param current_page: 当前页
@@ -54,7 +52,7 @@ async def query_course_list_page(current_page: int, page_size: int, course_name:
     :return: 学院列表
     """
     redis: Redis = await get_redis()
-    role_keys: List[str] = jsonpickle.decode(await redis.get('current-role-keys'))
+    role_keys: list[str] = jsonpickle.decode(await redis.get('current-role-keys'))
     # 管理员/学生：可查询所有课程
     if 'admin' in role_keys or 'student' in role_keys:
         if course_name:
@@ -87,7 +85,7 @@ async def insert_course(course: CourseDto):
     :param course: 课程信息
     """
     redis: Redis = await get_redis()
-    role_keys: List[str] = jsonpickle.decode(await redis.get('current-role-keys'))
+    role_keys: list[str] = jsonpickle.decode(await redis.get('current-role-keys'))
     # 管理员：指定教师添加课程
     if 'admin' in role_keys:
         db.add(Course(course_name=course.course_name, teacher_id=course.teacher_id,
@@ -138,7 +136,7 @@ async def update_course_choice(course_id: int):
     :param course_id: 课程ID
     """
     redis: Redis = await get_redis()
-    role_keys: List[str] = jsonpickle.decode(await redis.get('current-role-keys'))
+    role_keys: list[str] = jsonpickle.decode(await redis.get('current-role-keys'))
     item: Course = db.query(Course).filter(Course.course_id == course_id).first()
     if 'student' in role_keys and item and item.is_delete == '0' and item.count != item.choice:
         login_info: LoginDto = jsonpickle.decode(await redis.get('current-user'))
@@ -156,7 +154,7 @@ async def update_course_quit(course_id: int):
     :param course_id: 课程ID
     """
     redis: Redis = await get_redis()
-    role_keys: List[str] = jsonpickle.decode(await redis.get('current-role-keys'))
+    role_keys: list[str] = jsonpickle.decode(await redis.get('current-role-keys'))
     item: Course = db.query(Course).filter(Course.course_id == course_id).first()
     if 'student' in role_keys and item and item.is_delete == '0' and item.choice != 0:
         login_info: LoginDto = jsonpickle.decode(await redis.get('current-user'))

@@ -2,8 +2,6 @@
 专业业务
 @Author:何同学
 """
-from typing import List
-
 from sqlalchemy.orm import Session
 
 from database.mysql import get_db

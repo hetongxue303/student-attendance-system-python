@@ -2,13 +2,11 @@
 用户业务
 @Author:何同学
 """
-from typing import List
-
 import jsonpickle
 from aioredis import Redis
 from sqlalchemy.orm import Session
 
-from core.security import get_password_hash, get_user
+from core.security import get_password_hash
 from database.mysql import get_db
 from database.redis import get_redis
 from models import User, User_Role
@@ -24,7 +22,7 @@ async def insert_user(data: UserDto):
     :param data: 用户信息
     """
     redis: Redis = await get_redis()
-    role_keys: List[str] = jsonpickle.decode(await redis.get('current-role-keys'))
+    role_keys: list[str] = jsonpickle.decode(await redis.get('current-role-keys'))
     if 'admin' in role_keys:
         db.add(User(username=data.username, password=get_password_hash(data.password),
                     is_admin='1' if data.role == 1 else '0', is_enable='1' if data.is_enable else '0',
@@ -36,16 +34,16 @@ async def insert_user(data: UserDto):
         db.commit()
 
 
-def query_user_list_page(current_page: int, page_size: int) -> Page[List[UserDtoOut]]:
+def query_user_list_page(current_page: int, page_size: int) -> Page[list[UserDtoOut]]:
     """
     分页查询用户列表
     :param current_page: 当前页
     :param page_size: 页面大小
     :return: 选课列表
     """
-    return Page(total=db.query(User).filter(User.is_delete == '0').count(),
-                record=db.query(User).filter(User.is_delete == '0').limit(page_size).offset(
-                    (current_page - 1) * page_size).all())
+    total = db.query(User).filter(User.is_delete == '0').count()
+    record = db.query(User).filter(User.is_delete == '0').limit(page_size).offset((current_page - 1) * page_size).all()
+    return Page(total=total, record=record)
 
 
 def query_user_by_username(username: str):
@@ -54,16 +52,18 @@ def query_user_by_username(username: str):
     :param username: 用户名
     :return:用户信息
     """
-    return db.query(User).filter(User.username == username).first()
+    user = db.query(User).filter(User.username == username).first()
+    return user
 
 
-def query_user_by_role(role: int) -> List[User]:
+def query_user_by_role(role: int) -> list[User]:
     """
     根据用户角色查询用户信息
     :param role: 用户角色
     :return: 用户信息
     """
-    return db.query(User).filter(User.is_delete == '0', User.role == role).all()
+    user = db.query(User).filter(User.is_delete == '0', User.role == role).all()
+    return user
 
 
 def delete_user_by_id(user_id: int):
@@ -77,7 +77,7 @@ def delete_user_by_id(user_id: int):
     db.commit()
 
 
-def delete_user_by_ids(user_ids: List[int]):
+def delete_user_by_ids(user_ids: list[int]):
     """
     批量删除用户
     :param user_ids: 用户ID

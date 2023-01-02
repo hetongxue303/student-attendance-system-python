@@ -2,11 +2,10 @@
 用户模型
 @Author:何同学
 """
-from typing import List
+from datetime import datetime
 
 from pydantic import BaseModel
 
-from schemas.common import Common
 from schemas.menu import MenuDto
 
 
@@ -17,15 +16,16 @@ class LoginDto(BaseModel):
     avatar: str = None
     is_admin: bool = None
     username: str = None
-    menus: List[MenuDto] = None
-    permissions: List[str] = None
-    roles: List[str] = None
+    menus: list[MenuDto] = None
+    permissions: list[str] = None
+    roles: list[str] = None
 
     class Config:
         orm_mode = True
+        arbitrary_types_allowed = True
 
 
-class UserDtoOut(Common):
+class UserDtoOut(BaseModel):
     user_id: int = None
     username: str = None
     nick_name: str = None
@@ -39,6 +39,12 @@ class UserDtoOut(Common):
     is_enable: bool = None
     is_delete: bool = None
     description: str = None
+    create_time: datetime = None
+    update_time: datetime = None
+
+    class Config:
+        orm_mode = True
+        arbitrary_types_allowed = True
 
 
 class UserDto(UserDtoOut):
@@ -52,6 +58,7 @@ class up_email(BaseModel):
 
     class Config:
         orm_mode = True
+        arbitrary_types_allowed = True
 
 
 class up_password(BaseModel):
@@ -61,11 +68,13 @@ class up_password(BaseModel):
 
     class Config:
         orm_mode = True
+        arbitrary_types_allowed = True
 
 
 class CurrentUserInfo(BaseModel):
-    menu_id: List[int] = None
-    menu_data: List[MenuDto]
+    menu_id: list[int] = None
+    menu_data: list[MenuDto]
 
     class Config:
         orm_mode = True
+        arbitrary_types_allowed = True

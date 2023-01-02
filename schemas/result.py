@@ -9,8 +9,6 @@ from fastapi.responses import JSONResponse
 from pydantic.generics import GenericModel
 from starlette import status
 
-from schemas.common import Page
-
 T = typing.TypeVar("T")
 
 

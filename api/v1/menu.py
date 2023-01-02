@@ -4,37 +4,56 @@
 """
 import typing
 
-from fastapi import APIRouter, Body
+from fastapi import APIRouter, Security
+from sqlalchemy.orm import Session
+
+from core.security import check_permissions
+from database.mysql import get_db
+from models import Menu, Role_Menu
+from schemas.menu import MenuLazyTreeDto
+from schemas.result import Success
 
 router = APIRouter()
+db: Session = next(get_db())
 
 
-@router.get('/get/all', summary='查询菜单(All)')
-async def select_all():
-    print('进方法')
-    pass
+@router.get('/get/one', response_model=Success[list[MenuLazyTreeDto]], summary='查询菜单(通过角色ID)',
+            dependencies=[Security(check_permissions)])
+async def select_one(role_id: int = None):
+    """
+    通过角色ID查询角色菜单信息
+    :param role_id:
+    :return:
+    """
+    menu_ids: list[int] = []
+    data: list[MenuLazyTreeDto] = []
+    record = db.query(Role_Menu).filter(Role_Menu.role_id == role_id).all()
+    if record:
+        for item in record:
+            menu_ids.append(item.menu_id)
+    if menu_ids:
+        menus = db.query(Menu).filter(Menu.menu_id.in_(menu_ids)).all()
+        if menus:
+            for menu in menus:
+                data.append(MenuLazyTreeDto(id=menu.menu_id, name=menu.menu_title, disable=False,
+                                            leaf=True if db.query(Menu).filter(
+                                                Menu.parent_id == menu.menu_id).count() == 0 else False))
+    return Success(data=data, message='查询成功')
 
 
-@router.get('/get/page', summary='查询菜单(Page)')
-async def select_page(data=Body(None)):
-    pass
-
-
-@router.get('/getOne/{id}', summary='查询菜单(ById)')
-async def select_one(id: int):
-    pass
-
-
-@router.post('/insert', summary='新增菜单')
-async def insert_one(data=Body(None)):
-    pass
-
-
-@router.delete('/delete/{id}', summary='删除菜单')
-async def delete_one(id: int):
-    pass
-
-
-@router.put('/update/{id}', summary='修改菜单')
-async def update_one(id: int):
-    pass
+@router.get('/get/tree/lazy', response_model=Success[list[MenuLazyTreeDto]], summary='获取懒加载菜单树')
+async def select_lazy_tree(parent_id: int = None):
+    """
+    获取懒加载菜单树
+    :param parent_id: 父ID
+    :return:
+    """
+    data: list[MenuLazyTreeDto] = []
+    id: int = 0 if parent_id is None else parent_id
+    menus = db.query(Menu).filter(Menu.parent_id == id).all()
+    if menus:
+        for menu in menus:
+            data.append(MenuLazyTreeDto(id=menu.menu_id, name=menu.menu_title, disable=False,
+                                        leaf=True if db.query(Menu).filter(
+                                            Menu.parent_id == menu.menu_id).count() == 0 else False))
+    return Success(data=data, message='查询成功')

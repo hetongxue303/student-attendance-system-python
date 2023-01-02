@@ -3,15 +3,15 @@
 @Author:何同学
 """
 import decimal
+from datetime import datetime
 
 from pydantic import BaseModel
 
-from schemas.common import Common
 from schemas.course import CourseDto
 from schemas.user import UserDtoOut
 
 
-class ChoiceDto(Common):
+class ChoiceDto(BaseModel):
     choice_id: int = None
     user_id: int = None
     user: UserDtoOut = None
@@ -22,6 +22,12 @@ class ChoiceDto(Common):
     is_delete: bool = None
     status: int = None
     description: str = None
+    create_time: datetime = None
+    update_time: datetime = None
+
+    class Config:
+        orm_mode = True
+        arbitrary_types_allowed = True
 
 
 class UpdateBatchChoiceDto(BaseModel):
@@ -30,3 +36,4 @@ class UpdateBatchChoiceDto(BaseModel):
 
     class Config:
         orm_mode = True
+        arbitrary_types_allowed = True

@@ -2,8 +2,6 @@
 学院业务
 @Author:何同学
 """
-from typing import List
-
 from sqlalchemy.orm import Session
 
 from database.mysql import get_db
@@ -14,7 +12,7 @@ from schemas.common import Page
 db: Session = next(get_db())
 
 
-def query_college_list_all() -> Page[List[CollegeDto]]:
+def query_college_list_all() -> Page[list[CollegeDto]]:
     """
     查询所有学院
     :return:
@@ -23,7 +21,7 @@ def query_college_list_all() -> Page[List[CollegeDto]]:
                 record=db.query(College).filter(College.is_delete == '0').all())
 
 
-def query_college_list_page(current_page: int, page_size: int, college_name: str) -> Page[List[CollegeDto]]:
+def query_college_list_page(current_page: int, page_size: int, college_name: str) -> Page[list[CollegeDto]]:
     """
     分页查询学院列表
     :param current_page: 当前页

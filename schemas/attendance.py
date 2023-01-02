@@ -4,12 +4,13 @@
 """
 from datetime import datetime
 
-from schemas.common import Common
+from pydantic import BaseModel
+
 from schemas.course import CourseDto
 from schemas.user import UserDtoOut
 
 
-class AttendanceDto(Common):
+class AttendanceDto(BaseModel):
     attendance_id: int = None
     user_id: int = None
     user: UserDtoOut = None
@@ -20,6 +21,8 @@ class AttendanceDto(Common):
     course_count: int = None
     attendance_count: int = None
     is_end: bool = None
+    create_time: datetime = None
+    update_time: datetime = None
 
     class Config:
         orm_mode = True

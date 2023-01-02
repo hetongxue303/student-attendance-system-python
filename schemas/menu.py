@@ -2,10 +2,12 @@
 菜单模型
 @Author:何同学
 """
-from schemas.common import Common
+from datetime import datetime
+
+from pydantic import BaseModel
 
 
-class MenuDto(Common):
+class MenuDto(BaseModel):
     menu_id: int = None
     menu_name: str = None
     menu_title: str = None
@@ -22,6 +24,20 @@ class MenuDto(Common):
     is_cache: bool = None
     is_delete: bool = None
     description: str = None
+    create_time: datetime = None
+    update_time: datetime = None
 
     class Config:
         orm_mode = True
+        arbitrary_types_allowed = True
+
+
+class MenuLazyTreeDto(BaseModel):
+    id: int = None
+    name: str = None
+    disable: bool = None
+    leaf: bool = None
+
+    class Config:
+        orm_mode = True
+        arbitrary_types_allowed = True

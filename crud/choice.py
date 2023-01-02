@@ -2,8 +2,6 @@
 选课业务
 @Author:何同学
 """
-from typing import List
-
 import jsonpickle
 from aioredis import Redis
 from sqlalchemy.orm import Session
@@ -20,7 +18,7 @@ from schemas.user import LoginDto
 db: Session = next(get_db())
 
 
-async def query_choice_student_list_all(current_page: int, page_size: int) -> Page[List[ChoiceDto]]:
+async def query_choice_student_list_all(current_page: int, page_size: int) -> Page[list[ChoiceDto]]:
     """
     获取学生选课记录
     :param current_page:
@@ -28,7 +26,7 @@ async def query_choice_student_list_all(current_page: int, page_size: int) -> Pa
     :return:
     """
     redis: Redis = await get_redis()
-    role_keys: List[str] = jsonpickle.decode(await redis.get('current-role-keys'))
+    role_keys: list[str] = jsonpickle.decode(await redis.get('current-role-keys'))
     login_info: LoginDto = jsonpickle.decode(await redis.get('current-user'))
     user: User = await get_user(login_info.username)
     if 'student' in role_keys:
@@ -39,7 +37,7 @@ async def query_choice_student_list_all(current_page: int, page_size: int) -> Pa
                         (current_page - 1) * page_size).all())
 
 
-def query_choice_list_all() -> Page[List[ChoiceDto]]:
+def query_choice_list_all() -> Page[list[ChoiceDto]]:
     """
     查询所有选课记录
     :return:
@@ -49,7 +47,7 @@ def query_choice_list_all() -> Page[List[ChoiceDto]]:
 
 
 async def query_choice_list_page(current_page: int, page_size: int, status: int,
-                                 real_name: str, course_name: str) -> Page[List[ChoiceDto]]:
+                                 real_name: str, course_name: str) -> Page[list[ChoiceDto]]:
     """
     分页查询学院列表
     :param current_page: 当前页
@@ -60,7 +58,7 @@ async def query_choice_list_page(current_page: int, page_size: int, status: int,
     :return: 选课列表
     """
     redis: Redis = await get_redis()
-    role_keys: List[str] = jsonpickle.decode(await redis.get('current-role-keys'))
+    role_keys: list[str] = jsonpickle.decode(await redis.get('current-role-keys'))
     # 管理员：查询所有
     if 'admin' in role_keys:
         return Page(total=db.query(Choice).filter(Choice.is_delete == '0').count(),
@@ -70,7 +68,7 @@ async def query_choice_list_page(current_page: int, page_size: int, status: int,
     if 'teacher' in role_keys:
         user: User = await get_user(jsonpickle.decode(await redis.get('current-user')).username)
         courses = db.query(Course).filter(Course.teacher_id == user.user_id).all()
-        course_ids: List[int] = []
+        course_ids: list[int] = []
         for v in courses:
             course_ids.append(v.course_id)
         return Page(total=db.query(Choice).filter(Choice.is_delete == '0', Choice.is_quit == '0',

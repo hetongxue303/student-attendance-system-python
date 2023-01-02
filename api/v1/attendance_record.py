@@ -30,7 +30,8 @@ async def insert_one(data: AttendanceRecordDto):
     return Success(message='新增成功')
 
 
-@router.delete('/delete/{id}', response_model=Success[typing.Any], summary='删除考勤记录')
+@router.delete('/delete/{id}', response_model=Success[typing.Any], summary='删除考勤记录',
+               dependencies=[Security(check_permissions)])
 async def delete_one(id: int):
     delete_attendance_record_by_id(id)
     return Success(message='删除成功')

@@ -2,8 +2,6 @@
 角色业务
 @Author:何同学
 """
-from typing import List
-
 from sqlalchemy.orm import Session
 
 from database.mysql import get_db
@@ -14,7 +12,7 @@ from schemas.role import RoleDto
 db: Session = next(get_db())
 
 
-def query_role_list_all() -> Page[List[RoleDto]]:
+def query_role_list_all() -> Page[list[RoleDto]]:
     """
     查询角色列表
     :return: 角色列表

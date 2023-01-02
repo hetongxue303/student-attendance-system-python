@@ -3,14 +3,12 @@
 @Author:何同学
 """
 import typing
-from typing import List
 
-from fastapi import APIRouter, Body, Security
+from fastapi import APIRouter, Security
 
 from core.security import check_permissions
 from crud.college import delete_college_by_id
-from crud.user import query_user_by_role, query_user_list_page, delete_user_by_id, delete_user_by_ids, \
-    update_user_by_id, insert_user
+from crud.user import query_user_by_role, query_user_list_page, delete_user_by_id, update_user_by_id, insert_user
 from schemas.common import Page, BatchDto
 from schemas.result import Success
 from schemas.user import UserDtoOut, up_password, up_email, UserDto
@@ -18,18 +16,19 @@ from schemas.user import UserDtoOut, up_password, up_email, UserDto
 router = APIRouter()
 
 
-@router.get('/get/all', summary='查询用户(All)')
+@router.get('/get/all', summary='查询用户(All)', dependencies=[Security(check_permissions)])
 async def select_all():
     pass
 
 
-@router.get('/get/all/{role}', response_model=Success[List[UserDtoOut]], summary='查询用户(All)')
+@router.get('/get/all/{role}', response_model=Success[list[UserDtoOut]], summary='查询用户(All)',
+            dependencies=[Security(check_permissions)])
 async def select_all(role: int):
     users = query_user_by_role(role=role)
     return Success(data=users, message='查询成功')
 
 
-@router.get('/get/page', response_model=Success[Page[List[UserDtoOut]]], summary='查询用户(Page)',
+@router.get('/get/page', response_model=Success[Page[list[UserDtoOut]]], summary='查询用户(Page)',
             dependencies=[Security(check_permissions)])
 async def select_page(currentPage: int, pageSize: int):
     users = query_user_list_page(current_page=currentPage, page_size=pageSize)
@@ -65,14 +64,16 @@ async def update_one(data: UserDto):
     return Success(message='修改成功')
 
 
-@router.put('/update/password', response_model=Success[typing.Any], summary='修改密码')
+@router.put('/update/password', response_model=Success[typing.Any], summary='修改密码',
+            dependencies=[Security(check_permissions)])
 async def update_password(data: up_password):
     print(data.new_password)
     print(data.old_password)
     print(data.confirm_password)
 
 
-@router.put('/update/email', response_model=Success[typing.Any], summary='修改邮箱')
+@router.put('/update/email', response_model=Success[typing.Any], summary='修改邮箱',
+            dependencies=[Security(check_permissions)])
 async def update_email(data: up_email):
     print(data.email)
     print(data.code)

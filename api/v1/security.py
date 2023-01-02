@@ -3,7 +3,6 @@
 @Author:何同学
 """
 import typing
-from typing import List
 from datetime import timedelta
 
 import jsonpickle
@@ -38,9 +37,9 @@ async def login(data: OAuth2PasswordRequestForm = Depends(), code: str = Form())
         await set_current_user_info(user.user_id)
         await generate_scopes()
         redis: Redis = await get_redis()
-        menus: List[MenuDto] = jsonpickle.decode(await redis.get('current-menu-data'))
-        role_key: List[str] = jsonpickle.decode(await redis.get('current-role-keys'))
-        scopes: List[str] = jsonpickle.decode(await redis.get('current-scopes'))
+        menus: list[MenuDto] = jsonpickle.decode(await redis.get('current-menu-data'))
+        role_key: list[str] = jsonpickle.decode(await redis.get('current-role-keys'))
+        scopes: list[str] = jsonpickle.decode(await redis.get('current-scopes'))
         token: str = await generate_token({'id': user.user_id, 'sub': user.username, 'scopes': scopes})
         login_info: LoginDto = LoginDto(avatar=user.avatar, is_admin=user.is_admin, username=user.username,
                                         menus=menus, roles=role_key, permissions=scopes)

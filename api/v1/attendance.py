@@ -24,13 +24,15 @@ async def insert_one(data: AttendanceDto):
     return Success(message='新增成功')
 
 
-@router.delete('/delete/{id}', response_model=Success[typing.Any], summary='删除考勤')
+@router.delete('/delete/{id}', response_model=Success[typing.Any], summary='删除考勤',
+               dependencies=[Security(check_permissions)])
 async def delete_one(id: int):
     delete_attendance_by_id(id)
     return Success(message='删除成功')
 
 
-@router.put('/update', response_model=Success[typing.Any], summary='修改考勤')
+@router.put('/update', response_model=Success[typing.Any], summary='修改考勤',
+            dependencies=[Security(check_permissions)])
 async def update_one(data: AttendanceDto):
     update_attendance_by_id(data)
     return Success(message='修改成功')
