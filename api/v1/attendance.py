@@ -44,3 +44,10 @@ async def update_one(data: AttendanceDto):
 async def select_student_page(currentPage: int, pageSize: int):
     attendances = await query_attendances_student_list_all(current_page=currentPage, page_size=pageSize)
     return Success(data=attendances, message='查询成功')
+
+
+@router.get('/get/course/student/info', response_model=Success[Page[list[StudentAttendanceDto]]],
+            summary='获取课程学生签到信息',
+            dependencies=[Security(check_permissions)])
+async def select_course_student_info():
+    return Success(message='查询成功')
