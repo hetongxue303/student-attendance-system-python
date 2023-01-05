@@ -78,12 +78,3 @@ def delete_attendance_by_id(id: int):
     :return:
     """
     pass
-
-
-def update_attendance_by_id(data: AttendanceDto):
-    """
-    根据考勤ID修改
-    :param data:
-    :return:
-    """
-    pass

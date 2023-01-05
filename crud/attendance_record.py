@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session
 from core.security import get_user
 from database.mysql import get_db
 from database.redis import get_redis
-from models import User, Attendance_Record
+from models import User, Attendance_Record, Attendance
 from schemas.attendance_record import AttendanceRecordDto
 from schemas.common import Page
 
@@ -28,8 +28,9 @@ async def insert_attendance_record(data: AttendanceRecordDto):
                              attendance_id=data.attendance_id,
                              attendance_type=data.attendance_type.__str__(),
                              description=None if data.description is None else data.description))
+    item = db.query(Attendance).filter(Attendance.attendance_id == data.attendance_id).first()
+    item.attendance_count = item.attendance_count + 1 if item.course_count != item.attendance_count else item.attendance_count
     db.commit()
-    db.close()
 
 
 def query_attendance_record_list_all(current_page: int, page_size: int) -> Page[list[AttendanceRecordDto]]:

@@ -27,7 +27,7 @@ async def insert_one(data: AttendanceRecordDto):
              dependencies=[Security(check_permissions)])
 async def insert_one(data: AttendanceRecordDto):
     await insert_attendance_record(data)
-    return Success(message='新增成功')
+    return Success(message='签到成功')
 
 
 @router.delete('/delete/{id}', response_model=Success[typing.Any], summary='删除考勤记录',

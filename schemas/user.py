@@ -51,6 +51,22 @@ class UserDto(UserDtoOut):
     password: str = None
 
 
+class StudentAttendanceRecordDto(BaseModel):
+    user_id: int = None
+    avatar: str = None
+    gender: int = None
+    username: str = None
+    real_name: str = None
+    email: str = None
+    phone: str = None
+    attendance_type: int = None
+    attendance_time: datetime = None
+
+    class Config:
+        orm_mode = True
+        arbitrary_types_allowed = True
+
+
 class up_email(BaseModel):
     email: str = None
     code: str = None
