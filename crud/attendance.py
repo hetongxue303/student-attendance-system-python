@@ -6,6 +6,7 @@ from datetime import datetime, timedelta
 
 import jsonpickle
 from aioredis import Redis
+from sqlalchemy import desc
 from sqlalchemy.orm import Session
 
 from core.security import get_user
@@ -27,7 +28,6 @@ async def insert_attendance(data: AttendanceDto):
     """
     redis: Redis = await get_redis()
     user: User = await get_user(jsonpickle.decode(await redis.get('current-user')).username)
-    db.query(Attendance).filter(Attendance.end_time)
     db.add(Attendance(user_id=user.user_id, course_id=data.course_id,
                       release_time=data.release_time + timedelta(hours=8), end_time=data.end_time + timedelta(hours=8),
                       course_count=db.query(Choice).filter(Choice.course_id == data.course_id).count()))

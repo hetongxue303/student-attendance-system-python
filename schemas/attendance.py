@@ -27,3 +27,14 @@ class AttendanceDto(BaseModel):
     class Config:
         orm_mode = True
         arbitrary_types_allowed = True
+
+
+class updateAttendanceStatusVo(BaseModel):
+    user_id: int = None
+    attendance_id: int = None
+    attendance_type: int = None
+    description: str = None
+
+    class Config:
+        orm_mode = True
+        arbitrary_types_allowed = True

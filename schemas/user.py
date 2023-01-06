@@ -59,6 +59,7 @@ class StudentAttendanceRecordDto(BaseModel):
     real_name: str = None
     email: str = None
     phone: str = None
+    attendance_id: int = None
     attendance_type: int = None
     attendance_time: datetime = None
 
