@@ -18,23 +18,34 @@ from schemas.user import LoginDto
 db: Session = next(get_db())
 
 
-async def query_choice_student_list_all(current_page: int, page_size: int) -> Page[list[ChoiceDto]]:
+async def query_choice_student_list_all(current_page: int, page_size: int, course_name: str) -> Page[
+    list[ChoiceDto]]:
     """
     获取学生选课记录
-    :param current_page:
-    :param page_size:
+    :param current_page: 当前页
+    :param page_size: 页面大小
+    :param course_name: 课程名称
     :return:
     """
     redis: Redis = await get_redis()
-    role_keys: list[str] = jsonpickle.decode(await redis.get('current-role-keys'))
     login_info: LoginDto = jsonpickle.decode(await redis.get('current-user'))
     user: User = await get_user(login_info.username)
-    if 'student' in role_keys:
+    if course_name:
+        course_ids: list[int] = []
+        courses = db.query(Course).filter(Course.course_name.like('%{0}%'.format(course_name))).all()
+        for item in courses:
+            course_ids.append(item.course_id)
         return Page(total=db.query(Choice).filter(Choice.user_id == user.user_id, Choice.status == '1',
-                                                  Choice.is_quit == '0').count(),
+                                                  Choice.is_quit == '0', Choice.course_id.in_(course_ids)).count(),
                     record=db.query(Choice).filter(Choice.user_id == user.user_id, Choice.status == '1',
-                                                   Choice.is_quit == '0').limit(page_size).offset(
-                        (current_page - 1) * page_size).all())
+                                                   Choice.is_quit == '0', Choice.course_id.in_(course_ids)).limit(
+                        page_size).offset((current_page - 1) * page_size).all())
+
+    return Page(total=db.query(Choice).filter(Choice.user_id == user.user_id, Choice.status == '1',
+                                              Choice.is_quit == '0').count(),
+                record=db.query(Choice).filter(Choice.user_id == user.user_id, Choice.status == '1',
+                                               Choice.is_quit == '0').limit(page_size).offset(
+                    (current_page - 1) * page_size).all())
 
 
 def query_choice_list_all() -> Page[list[ChoiceDto]]:
