@@ -59,8 +59,16 @@ async def select_student_page(currentPage: int, pageSize: int):
 @router.get('/get/page', response_model=Success[Page[list[AttendanceDto]]], summary='分页获取签到信息',
             dependencies=[Security(check_permissions)])
 async def select_attendance_page(currentPage: int, pageSize: int, is_end: int = None, course_name: str = None):
+    """
+    分页获取签到信息
+    :param currentPage: 当前页
+    :param pageSize: 页面大小
+    :param is_end: 是否结束
+    :param course_name: 课程名称
+    """
     redis: Redis = await get_redis()
     user: User = await get_user(jsonpickle.decode(await redis.get('current-user')).username)
+
     # 判断是否过期
     record = db.query(Attendance).filter(Attendance.user_id == user.user_id).all()
     for item in record:
@@ -68,6 +76,7 @@ async def select_attendance_page(currentPage: int, pageSize: int, is_end: int = 
             temp = db.query(Attendance).filter(Attendance.attendance_id == item.attendance_id).first()
             temp.is_end = '1'
             db.commit()
+
     # 查询课程名 和 状态
     if is_end is not None and course_name:
         course_ids: list[int] = []
@@ -83,6 +92,7 @@ async def select_attendance_page(currentPage: int, pageSize: int, is_end: int = 
             Attendance.is_end).order_by(Attendance.create_time.desc()).limit(pageSize).offset(
             (currentPage - 1) * pageSize).all()
         return Success(data=Page(record=data, total=total), message='查询成功')
+
     # 查询状态
     if is_end is not None:
         total = db.query(Attendance).filter(Attendance.user_id == user.user_id,
@@ -92,6 +102,7 @@ async def select_attendance_page(currentPage: int, pageSize: int, is_end: int = 
             Attendance.is_end).order_by(Attendance.create_time.desc()).limit(pageSize).offset(
             (currentPage - 1) * pageSize).all()
         return Success(data=Page(record=data, total=total), message='查询成功')
+
     # 查询课程名
     if course_name:
         course_ids: list[int] = []
@@ -105,6 +116,7 @@ async def select_attendance_page(currentPage: int, pageSize: int, is_end: int = 
             Attendance.is_end).order_by(Attendance.create_time.desc()).limit(pageSize).offset(
             (currentPage - 1) * pageSize).all()
         return Success(data=Page(record=data, total=total), message='查询成功')
+
     # 默认查询
     total = db.query(Attendance).filter(Attendance.user_id == user.user_id).count()
     data = db.query(Attendance).filter(Attendance.user_id == user.user_id).order_by(
@@ -116,6 +128,13 @@ async def select_attendance_page(currentPage: int, pageSize: int, is_end: int = 
 @router.get('/student/page/checked', response_model=Success[Page[list[StudentAttendanceRecordDto]]],
             summary='分页获取已签到学生', dependencies=[Security(check_permissions)])
 async def select_user_checked_in(attendance_id: int, active: int, currentPage: int, pageSize: int):
+    """
+    分页获取已签到学生
+    :param attendance_id: 签到ID
+    :param active: 选中
+    :param currentPage: 当前页
+    :param pageSize: 页面大小
+    """
     attendance = db.query(Attendance).filter(Attendance.attendance_id == attendance_id).first()  # 查询签到信息
     attendance_records = db.query(Attendance_Record).filter(
         Attendance_Record.attendance_id == attendance.attendance_id).all()  # 查询签到记录
@@ -158,6 +177,10 @@ async def select_user_checked_in(attendance_id: int, active: int, currentPage: i
 @router.put('/update/student', response_model=Success[typing.Any], summary='更改学生签到情况',
             dependencies=[Security(check_permissions)])
 async def update_student_attendance_detail(data: updateAttendanceStatusVo):
+    """
+    更改学生签到情况
+    :param data: 前端数据
+    """
     item = db.query(Attendance).filter(Attendance.attendance_id == data.attendance_id).first()
     item.attendance_count = item.attendance_count + 1
     db.add(Attendance_Record(user_id=data.user_id, attendance_id=data.attendance_id,

@@ -46,8 +46,8 @@ def query_choice_list_all() -> Page[list[ChoiceDto]]:
                 record=db.query(Choice).filter(Choice.is_delete == '0').all())
 
 
-async def query_choice_list_page(current_page: int, page_size: int, status: int,
-                                 real_name: str, course_name: str) -> Page[list[ChoiceDto]]:
+async def query_choice_list_page(current_page: int, page_size: int, status: int = None,
+                                 real_name: str = None, course_name: str = None) -> Page[list[ChoiceDto]]:
     """
     分页查询学院列表
     :param current_page: 当前页
@@ -61,9 +61,93 @@ async def query_choice_list_page(current_page: int, page_size: int, status: int,
     role_keys: list[str] = jsonpickle.decode(await redis.get('current-role-keys'))
     # 管理员：查询所有
     if 'admin' in role_keys:
+
+        if status is not None and real_name and course_name:
+            user_ids: list[int] = []
+            course_ids: list[int] = []
+            course = db.query(Course).filter(Course.course_name.like('%{0}%'.format(course_name))).all()
+            users = db.query(User).filter(User.real_name.like('%{0}%'.format(real_name))).all()
+            for item in users:
+                user_ids.append(item.user_id)
+            for item in course:
+                course_ids.append(item.course_id)
+            return Page(
+                total=db.query(Choice).filter(Choice.is_delete == '0', Choice.status == status.__str__(),
+                                              Choice.user_id.in_(user_ids), Choice.course_id.in_(course_ids)).count(),
+                record=db.query(Choice).filter(Choice.is_delete == '0', Choice.status == status.__str__(),
+                                               Choice.user_id.in_(user_ids), Choice.course_id.in_(course_ids)).limit(
+                    page_size).offset((current_page - 1) * page_size).all())
+
+        if status is not None and real_name:
+            user_ids: list[int] = []
+            users = db.query(User).filter(User.real_name.like('%{0}%'.format(real_name))).all()
+            for item in users:
+                user_ids.append(item.user_id)
+            return Page(
+                total=db.query(Choice).filter(Choice.is_delete == '0', Choice.status == status.__str__(),
+                                              Choice.user_id.in_(user_ids)).count(),
+                record=db.query(Choice).filter(Choice.is_delete == '0', Choice.status == status.__str__(),
+                                               Choice.user_id.in_(user_ids)).limit(page_size).offset(
+                    (current_page - 1) * page_size).all())
+
+        if status is not None and course_name:
+            course_ids: list[int] = []
+            course = db.query(Course).filter(Course.course_name.like('%{0}%'.format(course_name))).all()
+            for item in course:
+                course_ids.append(item.course_id)
+            return Page(
+                total=db.query(Choice).filter(Choice.is_delete == '0', Choice.status == status.__str__(),
+                                              Choice.course_id.in_(course_ids)).count(),
+                record=db.query(Choice).filter(Choice.is_delete == '0', Choice.status == status.__str__(),
+                                               Choice.course_id.in_(course_ids)).limit(page_size).offset(
+                    (current_page - 1) * page_size).all())
+
+        if real_name and course_name:
+            user_ids: list[int] = []
+            course_ids: list[int] = []
+            course = db.query(Course).filter(Course.course_name.like('%{0}%'.format(course_name))).all()
+            users = db.query(User).filter(User.real_name.like('%{0}%'.format(real_name))).all()
+            for item in users:
+                user_ids.append(item.user_id)
+            for item in course:
+                course_ids.append(item.course_id)
+            return Page(
+                total=db.query(Choice).filter(Choice.is_delete == '0', Choice.user_id.in_(user_ids),
+                                              Choice.course_id.in_(course_ids)).count(),
+                record=db.query(Choice).filter(Choice.is_delete == '0', Choice.user_id.in_(user_ids),
+                                               Choice.course_id.in_(course_ids)).limit(page_size).offset(
+                    (current_page - 1) * page_size).all())
+
+        if status is not None:
+            return Page(
+                total=db.query(Choice).filter(Choice.is_delete == '0', Choice.status == status.__str__(), ).count(),
+                record=db.query(Choice).filter(Choice.is_delete == '0', Choice.status == status.__str__()).limit(
+                    page_size).offset((current_page - 1) * page_size).all())
+
+        if real_name:
+            user_ids: list[int] = []
+            users = db.query(User).filter(User.real_name.like('%{0}%'.format(real_name))).all()
+            for item in users:
+                user_ids.append(item.user_id)
+            return Page(
+                total=db.query(Choice).filter(Choice.is_delete == '0', Choice.user_id.in_(user_ids)).count(),
+                record=db.query(Choice).filter(Choice.is_delete == '0', Choice.user_id.in_(user_ids)).limit(
+                    page_size).offset((current_page - 1) * page_size).all())
+
+        if course_name:
+            course_ids: list[int] = []
+            course = db.query(Course).filter(Course.course_name.like('%{0}%'.format(course_name))).all()
+            for item in course:
+                course_ids.append(item.course_id)
+            return Page(
+                total=db.query(Choice).filter(Choice.is_delete == '0', Choice.course_id.in_(course_ids)).count(),
+                record=db.query(Choice).filter(Choice.is_delete == '0', Choice.course_id.in_(course_ids)).limit(
+                    page_size).offset((current_page - 1) * page_size).all())
+        # 默认查询
         return Page(total=db.query(Choice).filter(Choice.is_delete == '0').count(),
                     record=db.query(Choice).filter(Choice.is_delete == '0').limit(page_size).offset(
                         (current_page - 1) * page_size).all())
+
     # 教师：只能查询自己的课程
     if 'teacher' in role_keys:
         user: User = await get_user(jsonpickle.decode(await redis.get('current-user')).username)
@@ -71,6 +155,109 @@ async def query_choice_list_page(current_page: int, page_size: int, status: int,
         course_ids: list[int] = []
         for v in courses:
             course_ids.append(v.course_id)
+
+        if status is not None and real_name and course_name:
+            user_ids: list[int] = []
+            course_ids: list[int] = []
+            course = db.query(Course).filter(Course.course_name.like('%{0}%'.format(course_name))).all()
+            users = db.query(User).filter(User.real_name.like('%{0}%'.format(real_name))).all()
+            for item in users:
+                user_ids.append(item.user_id)
+            for item in course:
+                course_ids.append(item.course_id)
+            return Page(
+                total=db.query(Choice).filter(Choice.is_delete == '0', Choice.status == status.__str__(),
+                                              Choice.user_id.in_(user_ids), Choice.course_id.in_(course_ids),
+                                              Choice.is_quit == '0', Choice.course_id.in_(course_ids)).count(),
+                record=db.query(Choice).filter(Choice.is_delete == '0', Choice.status == status.__str__(),
+                                               Choice.user_id.in_(user_ids), Choice.course_id.in_(course_ids),
+                                               Choice.is_quit == '0', Choice.course_id.in_(course_ids)).limit(
+                    page_size).offset((current_page - 1) * page_size).all())
+
+        if status is not None and real_name:
+            user_ids: list[int] = []
+            users = db.query(User).filter(User.real_name.like('%{0}%'.format(real_name))).all()
+            for item in users:
+                user_ids.append(item.user_id)
+            return Page(
+                total=db.query(Choice).filter(Choice.is_delete == '0', Choice.status == status.__str__(),
+                                              Choice.user_id.in_(user_ids), Choice.is_quit == '0',
+                                              Choice.course_id.in_(course_ids)).count(),
+                record=db.query(Choice).filter(Choice.is_delete == '0', Choice.status == status.__str__(),
+                                               Choice.user_id.in_(user_ids), Choice.is_quit == '0',
+                                               Choice.course_id.in_(course_ids)).limit(page_size).offset(
+                    (current_page - 1) * page_size).all())
+
+        if status is not None and course_name:
+            course_ids: list[int] = []
+            course = db.query(Course).filter(Course.course_name.like('%{0}%'.format(course_name))).all()
+            for item in course:
+                course_ids.append(item.course_id)
+            return Page(
+                total=db.query(Choice).filter(Choice.is_delete == '0', Choice.status == status.__str__(),
+                                              Choice.course_id.in_(course_ids), Choice.is_quit == '0',
+                                              Choice.course_id.in_(course_ids)).count(),
+                record=db.query(Choice).filter(Choice.is_delete == '0', Choice.status == status.__str__(),
+                                               Choice.course_id.in_(course_ids), Choice.is_quit == '0',
+                                               Choice.course_id.in_(course_ids)).limit(page_size).offset(
+                    (current_page - 1) * page_size).all())
+
+        if real_name and course_name:
+            user_ids: list[int] = []
+            course_ids: list[int] = []
+            course = db.query(Course).filter(Course.course_name.like('%{0}%'.format(course_name))).all()
+            users = db.query(User).filter(User.real_name.like('%{0}%'.format(real_name))).all()
+            for item in users:
+                user_ids.append(item.user_id)
+            for item in course:
+                course_ids.append(item.course_id)
+            return Page(
+                total=db.query(Choice).filter(Choice.is_delete == '0', Choice.user_id.in_(user_ids),
+                                              Choice.course_id.in_(course_ids), Choice.is_quit == '0',
+                                              Choice.course_id.in_(course_ids)).count(),
+                record=db.query(Choice).filter(Choice.is_delete == '0', Choice.user_id.in_(user_ids),
+                                               Choice.course_id.in_(course_ids), Choice.is_quit == '0',
+                                               Choice.course_id.in_(course_ids)).limit(page_size).offset(
+                    (current_page - 1) * page_size).all())
+
+        if status is not None:
+            return Page(
+                total=db.query(Choice).filter(Choice.is_delete == '0', Choice.status == status.__str__(),
+                                              Choice.is_quit == '0',
+                                              Choice.course_id.in_(course_ids)).count(),
+                record=db.query(Choice).filter(Choice.is_delete == '0', Choice.status == status.__str__(),
+                                               Choice.is_quit == '0',
+                                               Choice.course_id.in_(course_ids)).limit(
+                    page_size).offset((current_page - 1) * page_size).all())
+
+        if real_name:
+            user_ids: list[int] = []
+            users = db.query(User).filter(User.real_name.like('%{0}%'.format(real_name))).all()
+            for item in users:
+                user_ids.append(item.user_id)
+            return Page(
+                total=db.query(Choice).filter(Choice.is_delete == '0', Choice.user_id.in_(user_ids),
+                                              Choice.is_quit == '0',
+                                              Choice.course_id.in_(course_ids)).count(),
+                record=db.query(Choice).filter(Choice.is_delete == '0', Choice.user_id.in_(user_ids),
+                                               Choice.is_quit == '0',
+                                               Choice.course_id.in_(course_ids)).limit(
+                    page_size).offset((current_page - 1) * page_size).all())
+
+        if course_name:
+            course_ids: list[int] = []
+            course = db.query(Course).filter(Course.course_name.like('%{0}%'.format(course_name))).all()
+            for item in course:
+                course_ids.append(item.course_id)
+            return Page(
+                total=db.query(Choice).filter(Choice.is_delete == '0', Choice.course_id.in_(course_ids),
+                                              Choice.is_quit == '0',
+                                              Choice.course_id.in_(course_ids)).count(),
+                record=db.query(Choice).filter(Choice.is_delete == '0', Choice.course_id.in_(course_ids),
+                                               Choice.is_quit == '0',
+                                               Choice.course_id.in_(course_ids)).limit(
+                    page_size).offset((current_page - 1) * page_size).all())
+        # 默认查询
         return Page(total=db.query(Choice).filter(Choice.is_delete == '0', Choice.is_quit == '0',
                                                   Choice.course_id.in_(course_ids)).count(),
                     record=db.query(Choice).filter(Choice.is_delete == '0', Choice.is_quit == '0',
