@@ -16,7 +16,8 @@ from schemas.result import Success
 router = APIRouter()
 
 
-@router.get('/student/get/page', response_model=Success[Page[list[ChoiceDto]]], summary='查询学生选课记录(Page)')
+@router.get('/student/get/page', response_model=Success[Page[list[ChoiceDto]]], summary='查询学生选课记录(Page)',
+            dependencies=[Security(check_permissions)])
 async def select_student_page(currentPage: int, pageSize: int, course_name: str = None):
     choices = await query_choice_student_list_all(current_page=currentPage, page_size=pageSize, course_name=course_name)
     return Success(data=choices, message='查询成功')

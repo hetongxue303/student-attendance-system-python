@@ -41,7 +41,8 @@ async def select_one(role_id: int = None):
     return Success(data=data, message='查询成功')
 
 
-@router.get('/get/tree/lazy', response_model=Success[list[MenuLazyTreeDto]], summary='获取懒加载菜单树')
+@router.get('/get/tree/lazy', response_model=Success[list[MenuLazyTreeDto]], summary='获取懒加载菜单树',
+            dependencies=[Security(check_permissions)])
 async def select_lazy_tree(parent_id: int = None):
     """
     获取懒加载菜单树

@@ -3,20 +3,19 @@
 @Author:何同学
 """
 from fastapi import APIRouter, FastAPI
-from api.v1 import security, college, major, role, menu, user, test, course, choice, attendance, attendance_record
+from api.v1 import security, college, major, role, menu, user, course, choice, attendance, attendance_record
 from core.config import settings
 
 router = APIRouter(prefix='/v1')
 
-router.include_router(test.router, tags=['测试模块'])
 router.include_router(security.router, tags=['安全模块'])
+router.include_router(user.router, tags=['用户模块'], prefix='/user')
 router.include_router(role.router, tags=['角色模块'], prefix='/role')
-router.include_router(choice.router, tags=['选课模块'], prefix='/choice')
+router.include_router(menu.router, tags=['菜单模块'], prefix='/menu')
 router.include_router(course.router, tags=['课程模块'], prefix='/course')
+router.include_router(choice.router, tags=['选课模块'], prefix='/choice')
 router.include_router(attendance.router, tags=['考勤模块'], prefix='/attendance')
 router.include_router(attendance_record.router, tags=['考勤记录模块'], prefix='/attendance-record')
-router.include_router(menu.router, tags=['菜单模块'], prefix='/menu')
-router.include_router(user.router, tags=['用户模块'], prefix='/user')
 router.include_router(college.router, tags=['学院模块'], prefix='/college')
 router.include_router(major.router, tags=['专业模块'], prefix='/major')
 

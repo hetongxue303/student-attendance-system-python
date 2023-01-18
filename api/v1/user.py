@@ -80,7 +80,8 @@ async def update_email(data: up_email):
     print(data.password)
 
 
-@router.get('/center', response_model=Success[typing.Any], summary='个人中心')
+@router.get('/center', response_model=Success[typing.Any], summary='个人中心',
+            dependencies=[Security(check_permissions)])
 async def get_center_info(username: str):
     delete_college_by_id(1)
     return Success(data=None)
