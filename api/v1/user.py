@@ -4,16 +4,23 @@
 """
 import typing
 
+import jsonpickle
+from aioredis import Redis
 from fastapi import APIRouter, Security
+from sqlalchemy.orm import Session
 
-from core.security import check_permissions
-from crud.college import delete_college_by_id
+from core.security import check_permissions, verify_password, get_password_hash
 from crud.user import query_user_by_role, query_user_list_page, delete_user_by_id, update_user_by_id, insert_user
+from database.mysql import get_db
+from database.redis import get_redis
+from exception.custom import UpdateException
+from models import User
 from schemas.common import Page, BatchDto
 from schemas.result import Success
-from schemas.user import UserDtoOut, up_password, up_email, UserDto
+from schemas.user import UserDtoOut, up_password, up_email, UserDto, LoginDto
 
 router = APIRouter()
+db: Session = next(get_db())
 
 
 @router.get('/get/all', summary='查询用户(All)', dependencies=[Security(check_permissions)])
@@ -67,21 +74,18 @@ async def update_one(data: UserDto):
 @router.put('/update/password', response_model=Success[typing.Any], summary='修改密码',
             dependencies=[Security(check_permissions)])
 async def update_password(data: up_password):
-    print(data.new_password)
-    print(data.old_password)
-    print(data.confirm_password)
-
-
-@router.put('/update/email', response_model=Success[typing.Any], summary='修改邮箱',
-            dependencies=[Security(check_permissions)])
-async def update_email(data: up_email):
-    print(data.email)
-    print(data.code)
-    print(data.password)
+    redis: Redis = await get_redis()
+    login_user: LoginDto = jsonpickle.decode(await redis.get('current-user'))
+    user: User = db.query(User).filter(User.username == login_user.username).first()
+    if not verify_password(data.old_password, user.password):
+        raise UpdateException(message='原密码不正确')
+    user.password = get_password_hash(data.new_password)
+    db.commit()
+    return Success(message='修改成功')
 
 
 @router.get('/center', response_model=Success[typing.Any], summary='个人中心',
             dependencies=[Security(check_permissions)])
 async def get_center_info(username: str):
-    delete_college_by_id(1)
-    return Success(data=None)
+    user: User = db.query(User).filter(User.username == username).first()
+    return Success(data=user)

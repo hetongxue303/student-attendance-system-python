@@ -81,7 +81,6 @@ class up_email(BaseModel):
 class up_password(BaseModel):
     old_password: str = None
     new_password: str = None
-    confirm_password: str = None
 
     class Config:
         orm_mode = True
