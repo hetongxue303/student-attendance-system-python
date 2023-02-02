@@ -45,8 +45,10 @@ async def login(data: OAuth2PasswordRequestForm = Depends(), code: str = Form())
                                         menus=menus, roles=role_key, permissions=scopes)
         await redis.setex(name=Const.TOKEN, value=token, time=timedelta(milliseconds=settings.JWT_EXPIRE))
         await redis.set(name='current-user', value=jsonpickle.encode(login_info))
-        return Token(code=200, message='登陆成功', access_token=token,
-                     expired_time=settings.JWT_EXPIRE, user=login_info)
+        return Token(code=200, message='登陆成功',
+                     access_token=token,
+                     expired_time=settings.JWT_EXPIRE,
+                     user=login_info)
 
 
 @router.get('/logout', response_model=Success, summary='用户注销')
