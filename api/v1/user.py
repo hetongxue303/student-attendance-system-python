@@ -84,6 +84,17 @@ async def update_password(data: up_password):
     return Success(message='修改成功')
 
 
+@router.get('/get/username/{username}', response_model=Success[UserDtoOut], summary='通过用户名查询用户信息',
+            dependencies=[Security(check_permissions)])
+async def get_user_by_username(username: str):
+    """
+    通过用户名查询用户信息
+    :param username: 用户名
+    :return:
+    """
+    return Success(data=db.query(User).filter(User.username == username).first(), message='查询成功')
+
+
 @router.get('/center', response_model=Success[typing.Any], summary='个人中心',
             dependencies=[Security(check_permissions)])
 async def get_center_info(username: str):

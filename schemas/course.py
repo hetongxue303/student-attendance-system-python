@@ -25,3 +25,12 @@ class CourseDto(BaseModel):
     class Config:
         orm_mode = True
         arbitrary_types_allowed = True
+
+
+class CourseDtoExt(BaseModel):
+    course: CourseDto = None
+    is_choice: bool = False
+
+    class Config:
+        orm_mode = True
+        arbitrary_types_allowed = True

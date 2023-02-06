@@ -6,6 +6,7 @@ import jsonpickle
 from aioredis import Redis
 from sqlalchemy.orm import Session
 
+from core import logger
 from core.security import get_user
 from crud.choice import insert_choice, update_choice_quit
 from database.mysql import get_db
@@ -15,7 +16,7 @@ from models import User, Choice
 from models.course import Course
 from schemas.choice import ChoiceDto
 from schemas.common import Page
-from schemas.course import CourseDto
+from schemas.course import CourseDto, CourseDtoExt
 from schemas.user import LoginDto
 
 db: Session = next(get_db())
@@ -43,7 +44,7 @@ async def query_course_teacher_list_all() -> list[Course]:
         return db.query(Course).filter(Course.teacher_id == user.user_id).all()
 
 
-async def query_course_list_page(current_page: int, page_size: int, course_name: str) -> Page[list[CourseDto]]:
+async def query_course_list_page(current_page: int, page_size: int, course_name: str) -> Page[list[CourseDtoExt]]:
     """
     分页查询课程列表
     :param current_page: 当前页
@@ -53,8 +54,8 @@ async def query_course_list_page(current_page: int, page_size: int, course_name:
     """
     redis: Redis = await get_redis()
     role_keys: list[str] = jsonpickle.decode(await redis.get('current-role-keys'))
-    # 管理员/学生：可查询所有课程
-    if 'admin' in role_keys or 'student' in role_keys:
+    # 管理员：可查询所有课程
+    if 'admin' in role_keys:
         if course_name:
             return Page(total=db.query(Course).filter(Course.is_delete == '0',
                                                       Course.course_name.like('%{0}%'.format(course_name))).count(),
@@ -64,9 +65,32 @@ async def query_course_list_page(current_page: int, page_size: int, course_name:
         return Page(total=db.query(Course).filter(Course.is_delete == '0').count(),
                     record=db.query(Course).filter(Course.is_delete == '0').limit(page_size).offset(
                         (current_page - 1) * page_size).all())
-    # 教师：只能查询自己的课程
+    # 学生：查询所有以及是否选课
     login_info: LoginDto = jsonpickle.decode(await redis.get('current-user'))
     user: User = await get_user(login_info.username)
+    result: list[CourseDtoExt] = []
+    if 'student' in role_keys:
+        if course_name:
+            data: list[Course] = db.query(Course).filter(Course.is_delete == '0',
+                                                         Course.course_name.like('%{0}%'.format(course_name))).limit(
+                page_size).offset((current_page - 1) * page_size).all()
+            for item in data:
+                info = db.query(Choice).filter(Choice.user_id == user.user_id, Choice.is_quit == '0',
+                                               Choice.course_id == item.course_id).first()
+                result.append(CourseDtoExt(course=item, is_choice=True if info else False))
+
+            return Page(total=result.__len__(), record=result)
+
+        data: list[Course] = db.query(Course).filter(Course.is_delete == '0').limit(page_size).offset(
+            (current_page - 1) * page_size).all()
+        for item in data:
+            info = db.query(Choice).filter(Choice.user_id == user.user_id, Choice.is_quit == '0',
+                                           Choice.course_id == item.course_id).first()
+            result.append(CourseDtoExt(course=item, is_choice=True if info else False))
+
+        return Page(total=result.__len__(), record=result)
+
+    # 教师：只能查询自己的课程
     if 'teacher' in role_keys:
         if course_name:
             return Page(total=db.query(Course).filter(Course.is_delete == '0', Course.teacher_id == user.user_id,
@@ -136,6 +160,13 @@ async def update_course_choice(course_id: int):
     :param course_id: 课程ID
     """
     redis: Redis = await get_redis()
+    userinfo: LoginDto = jsonpickle.decode(await redis.get('current-user'))
+    user: User = await get_user(userinfo.username)
+    choices: list[Choice] = db.query(Choice).filter(Choice.user_id == user.user_id, Choice.status == '1',
+                                                    Choice.is_quit == '0').all()
+    for choice in choices:
+        if choice.course_id == course_id:
+            raise UpdateException(message='不要重复选择！', code=201)
     role_keys: list[str] = jsonpickle.decode(await redis.get('current-role-keys'))
     item: Course = db.query(Course).filter(Course.course_id == course_id).first()
     if 'student' in role_keys and item and item.is_delete == '0' and item.count != item.choice:
@@ -145,7 +176,7 @@ async def update_course_choice(course_id: int):
         insert_choice(ChoiceDto(user_id=user.user_id, course_id=item.course_id))
         db.commit()
     else:
-        raise UpdateException(message='选课失败')
+        raise UpdateException(message='选课失败', code=400)
 
 
 async def update_course_quit(course_id: int):
