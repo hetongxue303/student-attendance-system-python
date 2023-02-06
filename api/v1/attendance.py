@@ -58,6 +58,17 @@ async def select_student_page(currentPage: int, pageSize: int, course_name: str 
     return Success(data=attendances, message='查询成功')
 
 
+@router.get('/get/id/{id}', response_model=Success[AttendanceDto], summary='通过ID查询信息',
+            dependencies=[Security(check_permissions)])
+async def get_by_id(id: int):
+    """
+    通过ID获取信息
+    :param id:
+    :return:
+    """
+    return Success(data=db.query(Attendance).filter(Attendance.attendance_id == id).first(), message='查询成功')
+
+
 @router.get('/get/page', response_model=Success[Page[list[AttendanceDto]]], summary='分页获取签到信息',
             dependencies=[Security(check_permissions)])
 async def select_attendance_page(currentPage: int, pageSize: int, is_end: int = None, course_name: str = None):

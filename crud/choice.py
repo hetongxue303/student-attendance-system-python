@@ -224,12 +224,12 @@ async def query_choice_list_page(current_page: int, page_size: int, status: int 
                 course_ids.append(item.course_id)
             return Page(
                 total=db.query(Choice).filter(Choice.is_delete == '0', Choice.user_id.in_(user_ids),
-                                              Choice.course_id.in_(course_ids), Choice.is_quit == '0',
-                                              Choice.course_id.in_(course_ids)).count(),
+                                              Choice.status == '0', Choice.course_id.in_(course_ids),
+                                              Choice.is_quit == '0', Choice.course_id.in_(course_ids)).count(),
                 record=db.query(Choice).filter(Choice.is_delete == '0', Choice.user_id.in_(user_ids),
-                                               Choice.course_id.in_(course_ids), Choice.is_quit == '0',
-                                               Choice.course_id.in_(course_ids)).limit(page_size).offset(
-                    (current_page - 1) * page_size).all())
+                                               Choice.status == '0', Choice.course_id.in_(course_ids),
+                                               Choice.is_quit == '0', Choice.course_id.in_(course_ids)).limit(
+                    page_size).offset((current_page - 1) * page_size).all())
 
         if status is not None:
             return Page(
@@ -248,10 +248,10 @@ async def query_choice_list_page(current_page: int, page_size: int, status: int 
                 user_ids.append(item.user_id)
             return Page(
                 total=db.query(Choice).filter(Choice.is_delete == '0', Choice.user_id.in_(user_ids),
-                                              Choice.is_quit == '0',
+                                              Choice.is_quit == '0', Choice.status == '0',
                                               Choice.course_id.in_(course_ids)).count(),
                 record=db.query(Choice).filter(Choice.is_delete == '0', Choice.user_id.in_(user_ids),
-                                               Choice.is_quit == '0',
+                                               Choice.is_quit == '0', Choice.status == '0',
                                                Choice.course_id.in_(course_ids)).limit(
                     page_size).offset((current_page - 1) * page_size).all())
 
@@ -262,16 +262,16 @@ async def query_choice_list_page(current_page: int, page_size: int, status: int 
                 course_ids.append(item.course_id)
             return Page(
                 total=db.query(Choice).filter(Choice.is_delete == '0', Choice.course_id.in_(course_ids),
-                                              Choice.is_quit == '0',
+                                              Choice.is_quit == '0', Choice.status == '0',
                                               Choice.course_id.in_(course_ids)).count(),
                 record=db.query(Choice).filter(Choice.is_delete == '0', Choice.course_id.in_(course_ids),
-                                               Choice.is_quit == '0',
+                                               Choice.is_quit == '0', Choice.status == '0',
                                                Choice.course_id.in_(course_ids)).limit(
                     page_size).offset((current_page - 1) * page_size).all())
         # 默认查询
-        return Page(total=db.query(Choice).filter(Choice.is_delete == '0', Choice.is_quit == '0',
+        return Page(total=db.query(Choice).filter(Choice.is_delete == '0', Choice.is_quit == '0', Choice.status == '0',
                                                   Choice.course_id.in_(course_ids)).count(),
-                    record=db.query(Choice).filter(Choice.is_delete == '0', Choice.is_quit == '0',
+                    record=db.query(Choice).filter(Choice.is_delete == '0', Choice.is_quit == '0', Choice.status == '0',
                                                    Choice.course_id.in_(course_ids)).limit(page_size).offset(
                         (current_page - 1) * page_size).all())
 
