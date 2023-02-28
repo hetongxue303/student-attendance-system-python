@@ -32,6 +32,19 @@ class MenuDto(BaseModel):
         arbitrary_types_allowed = True
 
 
+class MenuTreeDto(MenuDto):
+    children: list[MenuDto] = []
+
+
+class MenuPermissionDto(BaseModel):
+    role_id: int = None
+    data: list[int] = None
+
+    class Config:
+        orm_mode = True
+        arbitrary_types_allowed = True
+
+
 class MenuLazyTreeDto(BaseModel):
     id: int = None
     name: str = None

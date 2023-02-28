@@ -9,8 +9,9 @@ from sqlalchemy.orm import Session
 
 from core.security import check_permissions
 from database.mysql import get_db
-from models import Role
+from models import Role, Menu
 from schemas.common import Page, BatchDto
+from schemas.menu import MenuTreeDto
 from schemas.result import Success
 from schemas.role import RoleDto
 
