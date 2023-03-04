@@ -19,15 +19,15 @@ router = APIRouter()
 @router.get('/get/all', response_model=Success[Page[list[CollegeDto]]], summary='查询学院(All)',
             dependencies=[Security(check_permissions)])
 async def select_all():
-    colleges = query_college_list_all()
-    return Success(data=colleges, message='查询成功')
+    return Success(data=query_college_list_all(), message='查询成功')
 
 
 @router.get('/get/page', response_model=Success[Page[list[CollegeDto]]], summary='查询学院(Page)',
             dependencies=[Security(check_permissions)])
 async def select_page(currentPage: int, pageSize: int, college_name: str = None):
-    colleges = query_college_list_page(current_page=currentPage, page_size=pageSize, college_name=college_name)
-    return Success(data=colleges, message='查询成功')
+    return Success(
+        data=query_college_list_page(current_page=currentPage, page_size=pageSize, college_name=college_name),
+        message='查询成功')
 
 
 @router.post('/insert', response_model=Success[typing.Any], summary='新增学院',
